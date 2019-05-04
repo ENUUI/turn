@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - turn (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - turn (from `.symlinks/plugins/turn/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  turn:
+    :path: ".symlinks/plugins/turn/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  turn: 3899515f3f87ced161eae87faf54230961105e2b
+
+PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09
+
+COCOAPODS: 1.6.1
