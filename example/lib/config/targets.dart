@@ -5,7 +5,7 @@ import '../page2/action_two.dart';
 
 
 void registerTargets() {
-  Mediator.rootPage = () {
+  Mediator.rootPage = (params) {
     return Home();
   };
 

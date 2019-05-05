@@ -6,7 +6,6 @@
  * Copyright (c) 2019 ENUUI. All rights reserved.
  */
 
-
 import 'package:flutter/widgets.dart';
 export 'package:flutter/widgets.dart';
 
@@ -20,7 +19,7 @@ class Mediator {
   static Widget Function(String action) notFound;
   static var _mediatorTarget = Map<String, Target>();
 
-  static Widget Function() rootPage;
+  static Widget Function(Map<String, dynamic>) rootPage; // '/'
 
   static registerTarget({
     @required Target target,
@@ -45,27 +44,39 @@ class Mediator {
     if (action == null || action.length == 0) return null;
 
     if (action == "/") {
-      return rootPage();
+      if (rootPage != null) {
+        return rootPage(params);
+      } else {
+        return null;
+      }
     }
 
-    List<String> result = _resolveAction(action);
+    return _resolveAction(action, params);
+  }
 
-    // 没有找到 targetName
-    if (result == null) return null;
+  static Widget _resolveAction(String action, Map<String, dynamic> params) {
+    List<String> patterns = action.split('/');
 
-    var taget = _mediatorTarget[result[0]];
+    if (patterns == null || patterns.length == 0) {
+      return null;
+    }
+
+    var targetName = '';
+
+    if (patterns.length == 1) {
+      targetName = action;
+    }
+
+    var targetIndex = 0;
+    if (patterns[0].length == 0) {
+      targetIndex = 1;
+    }
+    targetName = patterns[targetIndex];
+
+    var taget = _mediatorTarget[targetName];
     // 没有找到 target
     if (taget == null) return null;
 
-    return taget.task(result[1], params);
-  }
-
-  static _resolveAction(String action) {
-    int targetLen = action.indexOf('/', 0);
-    if (targetLen < 0) return null;
-
-    var targetName = action.substring(0, targetLen);
-
-    return [targetName, action];
+    return taget.task(action, params);
   }
 }

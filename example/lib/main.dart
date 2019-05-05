@@ -12,6 +12,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   _MyAppState() {
     Targets.registerTargets();
+
+    var one = '/common/product/name';
+    var result = one.split('/');
+    print(result);
   }
 
   @override
