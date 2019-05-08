@@ -7,7 +7,7 @@ class ActionOne extends Target {
   String get targeName => "page1";
 
   @override
-  Widget task(String action, Map<String, dynamic> params) {
+  dynamic task(String action, Map<String, dynamic> params) {
     switch (action) {
       case "page1/page_one":
         return PageOne(
@@ -17,6 +17,8 @@ class ActionOne extends Target {
         return PageThree(
           params: params,
         );
+      case "page1/page_data":
+        return {"message": "this is not a widget!"};
       default:
         break;
     }

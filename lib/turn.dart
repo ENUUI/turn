@@ -1,10 +1,8 @@
-/**
- * ProjectName: turn
- * FileName: turn
- * Author: ENUUI
- * Date: 2019/4/30 5:50 PM
- * Copyright (c) 2019 ENUUI. All rights reserved.
- */
+/// ProjectName: turn
+/// FileName: turn
+/// Author: ENUUI
+/// Date: 2019/4/30 5:50 PM
+/// Copyright (c) 2019 ENUUI. All rights reserved.
 
 import 'dart:async';
 
@@ -40,7 +38,8 @@ class Turn {
     );
   };
 
-  static bool pop<T extends Object>(BuildContext context,  [ T result ]) => Navigator.pop<T>(context, result);
+  static bool pop<T extends Object>(BuildContext context, [T result]) =>
+      Navigator.pop<T>(context, result);
 
   static Future to(
     BuildContext context,
@@ -126,15 +125,17 @@ class Turn {
 
   /// ------
   static Widget _nextPage(String action, Map<String, dynamic> params) {
-    Widget next = Mediator.perform(action, params: params);
+    var next = Mediator.perform(action, params: params);
 
-    if (next == null) {
+    //
+    if (next == null || next is! Widget) {
       next = notFoundNexPage();
     }
 
     return next;
   }
 
+  /// https://github.com/theyakka/fluro/blob/master/lib/src/router.dart
   static RouteTransitionsBuilder _standardTransitionsBuilder(
       TransitionType transitionType) {
     return (BuildContext context, Animation<double> animation,

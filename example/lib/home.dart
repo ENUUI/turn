@@ -42,10 +42,14 @@ class _HomeState extends State<Home> {
               ),
               new FlatButton(
                   onPressed: () {
-                    Turn.to(context, 'page1/page_one', params: {
-                      "title": "接收数据页面",
-                      "message": "接收到的信息",
-                    });
+                    Turn.to(
+                      context,
+                      'page1/page_one',
+                      params: {
+                        "title": "接收数据页面",
+                        "message": "接收到的信息",
+                      },
+                    );
                   },
                   child: Text("将数据传到下一个页面")),
               new FlatButton(
@@ -67,6 +71,14 @@ class _HomeState extends State<Home> {
                     });
                   },
                   child: Text("接收返回页面数据")),
+              new FlatButton(
+                  onPressed: () {
+                    Turn.to(context, 'page1/page_data').then((value) {
+                      print("接收返回页面数据: $value");
+                      print(value["name"]);
+                    });
+                  },
+                  child: Text("Mediator 返回的不是一个 Widget")),
             ],
           ),
         ),
