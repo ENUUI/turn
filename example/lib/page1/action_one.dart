@@ -4,20 +4,20 @@ import 'page3.dart';
 
 class ActionOne extends Target {
   @override
-  String get targeName => "page1";
+  String get targetName => "page1";
 
   @override
   dynamic task(String action, Map<String, dynamic> params) {
     switch (action) {
-      case "page1/page_one":
+      case "/page1/page_one":
         return PageOne(
           params: params,
         );
-      case "page1/page_three":
+      case "/page1/page_three":
         return PageThree(
           params: params,
         );
-      case "page1/page_data":
+      case "/page1/page_data":
         return {"message": "this is not a widget!"};
       default:
         break;

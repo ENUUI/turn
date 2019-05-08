@@ -36,7 +36,7 @@ class PageTwo extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Turn.to(context, 'page1/page_three', params: {
+                Turn.to(context, '/page1/page_three', params: {
                   "title": "页面 三",
                   "message": "从上个页面来的数据",
                 });

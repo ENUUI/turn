@@ -42,7 +42,7 @@ class PageThree extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-//                Navigator.pushNamed(context, 'page2/page_two');
+//                Navigator.pushNamed(context, '/page2/page_two');
               },
               child: Text(
                 "页面三\ntitle: ${params["title"] ?? "没有数据"} \n message: ${params["message"] ?? "未接收到数据"}",

@@ -4,9 +4,8 @@
 /// Date: 2019/4/30 4:50 PM
 /// Copyright (c) 2019 ENUUI. All rights reserved.
 
-
 abstract class Target {
-  String get targeName;
+  String get targetName;
 
   dynamic task(String action, Map<String, dynamic> params);
 }
@@ -21,8 +20,8 @@ class Mediator {
     Target target,
   }) {
     assert(target != null && target != null);
-    assert(target.targeName != null);
-    _mediatorTarget[target.targeName] = target;
+    assert(target.targetName != null);
+    _mediatorTarget[target.targetName] = target;
   }
 
   static dynamic perform(String action, {Map<String, dynamic> params}) {
@@ -38,8 +37,9 @@ class Mediator {
   /// ------ private
   static dynamic _perform(String action, params) {
     if (action == null || action.length == 0) return null;
+    assert(action.substring(0, 1) == '/');
 
-    if (action == "/") {
+    if (action == '/') {
       if (rootPage != null) {
         return rootPage(params);
       } else {

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class ActionTwo extends Target {
   @override
-  String get targeName => "page2";
+  String get targetName => "page2";
 
   @override
   Widget task(String action, Map<String, dynamic> params) {
-    if (action == "${targeName}/page_two") {
+    if (action == "/${targetName}/page_two") {
       return PageTwo(
         params: params,
       );

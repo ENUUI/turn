@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     Turn.to(
                       context,
-                      'page1/page_one',
+                      '/page1/page_one',
                       params: {
                         "title": "接收数据页面",
                         "message": "接收到的信息",
@@ -55,17 +55,17 @@ class _HomeState extends State<Home> {
               new FlatButton(
                   onPressed: () {
                     // 点击去了没有注册的界面
-                    Turn.to(context, 'page1/page_one1');
+                    Turn.to(context, '/page1/page_one1');
                   },
                   child: Text("未注册路由（未注册路由界面可自定义）")),
               new FlatButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, 'page1/page_one');
+                    Navigator.pushNamed(context, '/page1/page_one');
                   },
                   child: Text("使用 Navigator")),
               new FlatButton(
                   onPressed: () {
-                    Turn.to(context, 'page1/page_three').then((value) {
+                    Turn.to(context, '/page1/page_three').then((value) {
                       print("接收返回页面数据: $value");
                       print(value["name"]);
                     });
@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
                   child: Text("接收返回页面数据")),
               new FlatButton(
                   onPressed: () {
-                    Turn.to(context, 'page1/page_data').then((value) {
+                    Turn.to(context, '/page1/page_data').then((value) {
                       print("接收返回页面数据: $value");
                       print(value["name"]);
                     });

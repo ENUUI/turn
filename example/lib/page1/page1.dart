@@ -35,10 +35,11 @@ class PageOne extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Turn.to(context, 'page2/page_two', params: {
+                Turn.to(context, '/page2/page_two', params: {
                   "title": "页面 二",
                   "message": "从上个页面来的数据",
                 });
+//              Navigator.pushNamed(context, '/page2/page_two');
               },
               child: Text(
                 "页面一\ntitle: ${params["title"] ?? "没有标题"} \n message: ${params["message"] ?? "没有数据"}\n\n点击跳转到下一个界面",
