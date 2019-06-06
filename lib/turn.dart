@@ -23,20 +23,9 @@ enum TransitionType {
 }
 
 class Turn {
-  static Widget Function() notFoundNexPage = () {
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: Text("发生了未知错误！",
-            style: TextStyle(
-              fontSize: 13.0,
-              fontWeight: FontWeight.w300,
-              decoration: TextDecoration.none,
-              color: Colors.black87,
-            )),
-      ),
-    );
-  };
+  // Invoke when router is not found.
+  // An error Widget can be returned at this time.
+  static Widget Function() notFoundNextPage;
 
   static bool pop<T extends Object>(BuildContext context, [T result]) =>
       Navigator.pop<T>(context, result);
@@ -97,12 +86,17 @@ class Turn {
 
     bool isNativeTransition = (transition == TransitionType.native ||
         transition == TransitionType.nativeModal);
+
+    var next = _nextPage(action, params);
+
+    if (next == null) return null;
+
     if (isNativeTransition) {
       return MaterialPageRoute<dynamic>(
           settings: _routeSettings,
           fullscreenDialog: transition == TransitionType.nativeModal,
           builder: (context) {
-            return _nextPage(action, params);
+            return next;
           });
     } else {
       var transitionsBuilder;
@@ -117,7 +111,7 @@ class Turn {
         transitionDuration: duration,
         transitionsBuilder: transitionsBuilder,
         pageBuilder: (context, animation, secondaryAnimation) {
-          return _nextPage(action, params);
+          return next;
         },
       );
     }
@@ -128,8 +122,8 @@ class Turn {
     var next = Mediator.perform(action, params: params);
 
     //
-    if (next == null || next is! Widget) {
-      next = notFoundNexPage();
+    if ((next == null || next is! Widget) && notFoundNextPage != null) {
+      next = notFoundNextPage();
     }
 
     return next;

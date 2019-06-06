@@ -11,6 +11,8 @@ abstract class Target {
 }
 
 class Mediator {
+  // Invoke when action is not found.
+  // An error handler can be returned at this time.
   static dynamic Function(String action) notFound;
   static var _mediatorTarget = Map<String, Target>();
 
@@ -24,6 +26,24 @@ class Mediator {
     _mediatorTarget[target.targetName] = target;
   }
 
+  // testing...
+  static dynamic get(String uri) {
+    if (uri == null || uri.length == 0) return null;
+
+    if (!uri.contains("?")) {
+      return perform(uri, params: null);
+    }
+
+    var comps = uri.split("?");
+    var action = comps.first;
+    var query = comps.last;
+
+    return perform(action, params: _separate(query));
+  }
+
+  /// Find out the registered Target by the action's first component
+  /// which should be the Target's name;
+  /// Then, the Target will receive the params and execute the action.
   static dynamic perform(String action, {Map<String, dynamic> params}) {
     var result = _perform(action, params);
 
@@ -69,10 +89,34 @@ class Mediator {
     }
     targetName = patterns[targetIndex];
 
-    var taget = _mediatorTarget[targetName];
+    var target = _mediatorTarget[targetName];
     // not found any target.
-    if (taget == null) return null;
+    if (target == null) return null;
 
-    return taget.task(action, params);
+    return target.task(action, params);
+  }
+
+  static Map<String, dynamic> _separate(String query) {
+    if (query == null || query.length == 0) return null;
+
+    List<String> parameters = query.split("&");
+
+    Map<String, dynamic> params = <String, dynamic>{};
+    for (int i = 0; i < parameters.length; i++) {
+      var q = parameters[i];
+      if (q.contains("=")) {
+        var keyValue = q.split("=");
+
+        var key = keyValue.first;
+        var value = keyValue.last;
+
+        if (key.length == 0) continue;
+
+        params[key] = value;
+      }
+    }
+    if (params.length == 0) return null;
+
+    return params;
   }
 }
