@@ -87,16 +87,14 @@ class Turn {
     bool isNativeTransition = (transition == TransitionType.native ||
         transition == TransitionType.nativeModal);
 
-    var next = _nextPage(action, params);
 
-    if (next == null) return null;
 
     if (isNativeTransition) {
       return MaterialPageRoute<dynamic>(
           settings: _routeSettings,
           fullscreenDialog: transition == TransitionType.nativeModal,
           builder: (context) {
-            return next;
+            return _nextPage(action, params);
           });
     } else {
       var transitionsBuilder;
@@ -111,7 +109,7 @@ class Turn {
         transitionDuration: duration,
         transitionsBuilder: transitionsBuilder,
         pageBuilder: (context, animation, secondaryAnimation) {
-          return next;
+          return _nextPage(action, params);
         },
       );
     }
