@@ -7,3 +7,7 @@ pubspec.lock
 coverage
 __temp_coverage*
 build/
+
+**/ios/Flutter/flutter_export_environment.sh
+
+**/example/ios/Podfile.lock

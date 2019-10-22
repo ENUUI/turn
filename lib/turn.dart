@@ -27,6 +27,8 @@ class Turn {
   // An error Widget can be returned at this time.
   static Widget Function() notFoundNextPage;
 
+  static void Function(BuildContext context, String route) willPushRoute;
+
   static bool pop<T extends Object>(BuildContext context, [T result]) =>
       Navigator.pop<T>(context, result);
 
@@ -55,6 +57,8 @@ class Turn {
     if (route == null) {
       completer.complete("No registered action was found to handle '$action'.");
     } else {
+      if (willPushRoute != null) willPushRoute(context, action);
+
       if (clearStack) {
         future = Navigator.pushAndRemoveUntil(context, route, (c) => false);
       } else {
@@ -86,8 +90,6 @@ class Turn {
 
     bool isNativeTransition = (transition == TransitionType.native ||
         transition == TransitionType.nativeModal);
-
-
 
     if (isNativeTransition) {
       return MaterialPageRoute<dynamic>(
