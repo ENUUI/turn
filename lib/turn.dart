@@ -29,6 +29,8 @@ class Turn {
 
   static void Function(BuildContext context, String route) willPushRoute;
 
+  static bool Function(BuildContext context, String route) shouldPushRoute;
+
   static bool pop<T extends Object>(BuildContext context, [T result]) =>
       Navigator.pop<T>(context, result);
 
@@ -57,6 +59,11 @@ class Turn {
     if (route == null) {
       completer.complete("No registered action was found to handle '$action'.");
     } else {
+      if (shouldPushRoute != null && shouldPushRoute(context, action) != true) {
+        completer.complete("Refused by `shouldPushRoute`");
+        return future;
+      }
+
       if (willPushRoute != null) willPushRoute(context, action);
 
       if (clearStack) {
