@@ -27,7 +27,7 @@ class Mediator {
   }
 
   // testing...
-  static dynamic get(String uri) {
+  static dynamic performUri(String uri) {
     if (uri == null || uri.length == 0) return null;
 
     if (!uri.contains("?")) {
@@ -97,26 +97,19 @@ class Mediator {
   }
 
   static Map<String, dynamic> _separate(String query) {
-    if (query == null || query.length == 0) return null;
+    final search = RegExp('([^&=]+)=?([^&]*)');
+    final params = Map<String, String>();
 
-    List<String> parameters = query.split("&");
+    if (query.startsWith('?')) query = query.substring(1);
 
-    Map<String, dynamic> params = <String, dynamic>{};
-    for (int i = 0; i < parameters.length; i++) {
-      var q = parameters[i];
-      if (q.contains("=")) {
-        var keyValue = q.split("=");
+    decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
 
-        var key = keyValue.first;
-        var value = keyValue.last;
+    for (Match match in search.allMatches(query)) {
+      String key = decode(match.group(1));
+      String value = decode(match.group(2));
 
-        if (key.length == 0) continue;
-
-        params[key] = value;
-      }
+      params[key] = value;
     }
-    if (params.length == 0) return null;
-
     return params;
   }
 }
