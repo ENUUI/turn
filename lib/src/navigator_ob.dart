@@ -2,13 +2,13 @@ import 'package:flutter/widgets.dart';
 
 final NavigatorObserver turnOb = _TurnOb();
 
-class _TurnNode {
-  _TurnNode({
+class TurnNode {
+  TurnNode._({
     this.route,
   });
 
-  _TurnNode previous;
-  _TurnNode next;
+  TurnNode previous;
+  TurnNode next;
   final Route route;
 
   String toString() {
@@ -17,19 +17,21 @@ class _TurnNode {
         '\nnext: ${next?.route?.settings?.name}';
   }
 
-  static bool equal(_TurnNode node, _TurnNode other) {
+  static bool equal(TurnNode node, TurnNode other) {
     return node?.route == other?.route;
   }
 
-  static bool isSame(_TurnNode node, Route otherRoute) {
+  static bool isSame(TurnNode node, Route otherRoute) {
     return node?.route == otherRoute;
   }
 }
 
-class _TurnStack {
-  static final List<_TurnNode> _turnRoutes = <_TurnNode>[];
+class TurnStack {
+  TurnStack._();
 
-  static _TurnNode top() {
+  static final List<TurnNode> _turnRoutes = <TurnNode>[];
+
+  static TurnNode top() {
     if (_turnRoutes.length == 0) return null;
     return _turnRoutes.last;
   }
@@ -39,26 +41,26 @@ class _TurnStack {
     return _turnRoutes.any(((node) => node.route == route));
   }
 
-  static List<_TurnNode> find(Route route) {
+  static List<TurnNode> find(Route route) {
     if (route == null) return null;
-    return _turnRoutes.where((node) => _TurnNode.isSame(node, route)).toList();
+    return _turnRoutes.where((node) => TurnNode.isSame(node, route)).toList();
   }
 
-  static void push(Route next, {Route previous}) {
+  static void _push(Route next, {Route previous}) {
     final stackPrevious = top();
 
-    if (!_TurnNode.isSame(stackPrevious, previous)) {
+    if (!TurnNode.isSame(stackPrevious, previous)) {
 // #warning...
     }
 
-    final node = _TurnNode(route: next);
+    final node = TurnNode._(route: next);
     node.previous = stackPrevious;
     stackPrevious?.next = node;
 
     _turnRoutes.add(node);
   }
 
-  static void remove(Route route) {
+  static void _remove(Route route) {
     final result = find(route);
     if (result?.isNotEmpty != true) return;
 
@@ -71,7 +73,7 @@ class _TurnStack {
     });
   }
 
-  static _TurnNode pop() {
+  static TurnNode _pop() {
     final node = top();
     if (node != null) {
       node.previous?.next = null;
@@ -84,23 +86,23 @@ class _TurnStack {
 class _TurnOb extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic> previousRoute) {
-    _TurnStack.push(route, previous: previousRoute);
+    TurnStack._push(route, previous: previousRoute);
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
-    _TurnStack.pop();
+    TurnStack._pop();
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic> previousRoute) {
-    _TurnStack.remove(route);
+    TurnStack._remove(route);
   }
 
   @override
   void didReplace({Route<dynamic> newRoute, Route<dynamic> oldRoute}) {
-    _TurnStack.remove(oldRoute);
-    _TurnStack.push(newRoute);
+    TurnStack._remove(oldRoute);
+    TurnStack._push(newRoute);
   }
 
   @override
