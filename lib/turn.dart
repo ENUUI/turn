@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:turn/src/navigator_ob.dart';
 
 import 'mediator.dart';
 export 'mediator.dart';
@@ -27,6 +28,7 @@ class Turn {
   // An error Widget can be returned at this time.
   static Widget Function() notFoundNextPage;
 
+  static NavigatorObserver get ob => turnOb;
   static void Function(BuildContext context, String route) willPushRoute;
 
   static bool Function(BuildContext context, String route) shouldPushRoute;

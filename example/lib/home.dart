@@ -79,6 +79,12 @@ class _HomeState extends State<Home> {
                     });
                   },
                   child: Text("Mediator 返回的不是一个 Widget")),
+              new FlatButton(
+                onPressed: () {
+                  Turn.to(context, '/action_three/page_t1');
+                },
+                child: Text('NEXT'),
+              ),
             ],
           ),
         ),

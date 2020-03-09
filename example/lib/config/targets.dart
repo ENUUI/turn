@@ -2,7 +2,7 @@ import 'package:turn/turn.dart';
 import '../home.dart';
 import '../page1/action_one.dart';
 import '../page2/action_two.dart';
-
+import '../page3/action_three.dart';
 void registerTargets() {
   Turn.shouldPushRoute = (ctx, route) {
     print(
@@ -20,4 +20,5 @@ void registerTargets() {
 
   Mediator.registerTarget(target: ActionOne());
   Mediator.registerTarget(target: ActionTwo());
+  Mediator.registerTarget(target: ActionThree());
 }

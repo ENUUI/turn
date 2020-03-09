@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Example",
+      navigatorObservers: [Turn.ob],
       onGenerateRoute: Turn.generator,
     );
   }
