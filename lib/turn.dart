@@ -9,7 +9,6 @@ export 'src/navigator_ob.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'mediator.dart';
-import 'src/navigator_ob.dart';
 
 enum TransitionType {
   native,
@@ -174,19 +173,5 @@ class Turn {
         _route(null, routeSettings.name, routeSettings: routeSettings);
 
     return route;
-  }
-}
-
-class TurnOb {
-  TurnOb._();
-
-  static NavigatorObserver get ob => turnOb;
-
-  static Route get current => TurnStack.top()?.route;
-
-  static Route get previous => TurnStack.top()?.previous?.route;
-
-  static bool pathOnTop(String path) {
-    return current?.settings?.name == path;
   }
 }

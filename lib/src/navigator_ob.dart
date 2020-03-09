@@ -2,30 +2,6 @@ import 'package:flutter/widgets.dart';
 
 final NavigatorObserver turnOb = _TurnOb();
 
-class TurnNode {
-  TurnNode._({
-    this.route,
-  });
-
-  TurnNode previous;
-  TurnNode next;
-  final Route route;
-
-  String toString() {
-    return '\ncurrent: ${route?.settings?.name}'
-        '\nprevious: ${previous?.route?.settings?.name}'
-        '\nnext: ${next?.route?.settings?.name}';
-  }
-
-  static bool equal(TurnNode node, TurnNode other) {
-    return node?.route == other?.route;
-  }
-
-  static bool isSame(TurnNode node, Route otherRoute) {
-    return node?.route == otherRoute;
-  }
-}
-
 class TurnStack {
   TurnStack._();
 
@@ -46,6 +22,39 @@ class TurnStack {
     return _turnRoutes.where((node) => TurnNode.isSame(node, route)).toList();
   }
 
+  static bool pathIsOnTop(String path) {
+    if (path == null || path.length == 0) return false;
+    return top()?.route?.settings?.name == path;
+  }
+
+  /// if path is empty, return top [TurnNode].
+  /// Otherwise, returns the top most match  or null
+  static TurnNode lastNode([String path]) {
+    final TurnNode node = top();
+
+    if (path == null || path.length == 0) return node;
+
+    TurnNode lastNodeMatch(String path, TurnNode node) {
+      if (node == null) return null;
+
+      if (node.route?.settings?.name == path)
+        return node;
+      else
+        return lastNodeMatch(path, node.previous);
+    }
+
+    return lastNodeMatch(path, node);
+  }
+
+  static Route lastRoute([String path]) => lastNode(path)?.route;
+
+  static Route lastPreviousRoute([String path]) =>
+      lastNode(path)?.previous?.route;
+
+  static String lastPreviousPath([String path]) =>
+      lastPreviousRoute(path)?.settings?.name;
+
+  /// private functions
   static void _push(Route next, {Route previous}) {
     final stackPrevious = top();
 
@@ -80,6 +89,30 @@ class TurnStack {
       _turnRoutes.removeLast();
     }
     return node;
+  }
+}
+
+class TurnNode {
+  TurnNode._({
+    this.route,
+  });
+
+  TurnNode previous;
+  TurnNode next;
+  final Route route;
+
+  String toString() {
+    return '\ncurrent: ${route?.settings?.name}'
+        '\nprevious: ${previous?.route?.settings?.name}'
+        '\nnext: ${next?.route?.settings?.name}';
+  }
+
+  static bool equal(TurnNode node, TurnNode other) {
+    return node?.route == other?.route;
+  }
+
+  static bool isSame(TurnNode node, Route otherRoute) {
+    return node?.route == otherRoute;
   }
 }
 
