@@ -3,15 +3,13 @@
 /// Author: ENUUI
 /// Date: 2019/4/30 5:50 PM
 /// Copyright (c) 2019 ENUUI. All rights reserved.
+export 'mediator.dart';
+export 'src/navigator_ob.dart';
 
 import 'dart:async';
-
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:turn/src/navigator_ob.dart';
-
 import 'mediator.dart';
-export 'mediator.dart';
+import 'src/navigator_ob.dart';
 
 enum TransitionType {
   native,
@@ -24,11 +22,12 @@ enum TransitionType {
 }
 
 class Turn {
+  Turn._();
+
   // Invoke when router is not found.
   // An error Widget can be returned at this time.
   static Widget Function() notFoundNextPage;
 
-  static NavigatorObserver get ob => turnOb;
   static void Function(BuildContext context, String route) willPushRoute;
 
   static bool Function(BuildContext context, String route) shouldPushRoute;
@@ -175,5 +174,19 @@ class Turn {
         _route(null, routeSettings.name, routeSettings: routeSettings);
 
     return route;
+  }
+}
+
+class TurnOb {
+  TurnOb._();
+
+  static NavigatorObserver get ob => turnOb;
+
+  static Route get current => TurnStack.top()?.route;
+
+  static Route get previous => TurnStack.top()?.previous?.route;
+
+  static bool pathOnTop(String path) {
+    return current?.settings?.name == path;
   }
 }
