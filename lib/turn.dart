@@ -17,8 +17,14 @@ enum TransitionType {
   inFromRight,
   inFromBottom,
   fadeIn,
-  custom, // if using custom then you must also provide a transition
+  custom, // Custom RouteTransitionsBuilder
+  customRoute, // Custom Route
 }
+
+typedef TurnRouteBuilder = Route Function(
+  BuildContext context,
+  Widget Function() nextPageBuilder,
+);
 
 class Turn {
   Turn._();
@@ -43,6 +49,7 @@ class Turn {
     TransitionType transition = TransitionType.native,
     RouteTransitionsBuilder transitionBuilder,
     Duration duration = const Duration(milliseconds: 250),
+    TurnRouteBuilder turnRouteBuilder,
   }) {
     var route = _route(
       context,
@@ -51,6 +58,7 @@ class Turn {
       transition: transition,
       transitionBuilder: transitionBuilder,
       duration: duration,
+      turnRouteBuilder: turnRouteBuilder,
     );
 
     Completer completer = new Completer();
@@ -89,6 +97,7 @@ class Turn {
     TransitionType transition = TransitionType.native,
     RouteTransitionsBuilder transitionBuilder,
     Duration duration = const Duration(milliseconds: 250),
+    TurnRouteBuilder turnRouteBuilder,
   }) {
     var _routeSettings = routeSettings;
     if (_routeSettings == null) {
@@ -105,6 +114,8 @@ class Turn {
           builder: (context) {
             return _nextPage(action, params);
           });
+    } else if (transition == TransitionType.customRoute) {
+      return turnRouteBuilder(context, () => _nextPage(action, params));
     } else {
       var transitionsBuilder;
       if (transition == TransitionType.custom) {
