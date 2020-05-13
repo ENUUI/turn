@@ -37,8 +37,9 @@ class Turn {
 
   static bool Function(BuildContext context, String route) shouldPushRoute;
 
-  static bool pop<T extends Object>(BuildContext context, [T result]) =>
-      Navigator.pop<T>(context, result);
+  static void pop<T extends Object>(BuildContext context, [T result]) {
+    Navigator.pop<T>(context, result);
+  }
 
   static Future to(
     BuildContext context,
