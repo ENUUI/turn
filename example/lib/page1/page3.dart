@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class PageThree extends StatelessWidget {
-  Map<String, dynamic> params;
+  final Map<String, dynamic> params;
 
   PageThree({
     this.params,
@@ -55,7 +55,7 @@ class PageThree extends StatelessWidget {
             FlatButton(
                 onPressed: () {
                   var result = Mediator.perform("/page2/get_data");
-                  print("从package: page2 获取的数据:\n --------- ${result}");
+                  print("从package: page2 获取的数据:\n --------- $result");
                 },
                 child: Text(
                   "点击获取 package: page2 的数据。",

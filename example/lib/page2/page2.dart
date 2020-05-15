@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class PageTwo extends StatelessWidget {
-  Map<String, dynamic> params;
+  final Map<String, dynamic> params;
 
   PageTwo({this.params});
 
