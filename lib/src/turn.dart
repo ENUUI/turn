@@ -1,51 +1,39 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:turn/src/express.dart';
+
+import 'express.dart';
+import 'imp.dart';
 import 'mediator.dart';
 import 'opts.dart';
 
-enum TransitionType {
-  native,
-  nativeModal,
-  inFromLeft,
-  inFromRight,
-  inFromBottom,
-  fadeIn,
-  custom, // Custom RouteTransitionsBuilder
-  customRoute, // Custom Route
-}
+abstract class Module extends Adaptor {
+  Widget? notFoundNextPage() => null;
 
-typedef TurnRouteBuilder = Route Function(
-  BuildContext? context,
-  Widget? Function(BuildContext context) nextPageBuilder,
-);
+  Widget rootPage(BuildContext context, Options options);
 
-class Turn {
-  Turn._();
+  void willTransitionRoute(BuildContext context, Options options) {}
 
-  static Widget Function()? notFoundNextPage;
-  static Widget Function(BuildContext context, Options)? rootPage;
+  Future<bool> shouldTransitionRoute(
+          BuildContext context, Options options) async =>
+      true;
 
-  static void Function(BuildContext context, Options)? willTransitionRoute;
-  static Future<bool> Function(BuildContext context, Options)?
-      shouldTransitionRoute;
+  Widget? willTransitionPage(BuildContext context, Options options) {
+    return resolveAction<Widget>(context, options);
+  }
 
-  static void pop<T extends Object>(BuildContext context, [T? result]) =>
+  void pop<T extends Object>(BuildContext context, [T? result]) =>
       Navigator.pop<T>(context, result);
 
-  static Future<bool> maybePop<T extends Object>(BuildContext context,
-          [T? result]) =>
+  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
       Navigator.maybePop<T>(context, result);
 
-  static void popUntil(BuildContext context, String action) =>
-      Navigator.popUntil(
+  void popUntil(BuildContext context, String action) => Navigator.popUntil(
         context,
         ModalRoute.withName(Options(action: action).path),
       );
 
-  static bool canPop(BuildContext context) => Navigator.canPop(context);
+  bool canPop(BuildContext context) => Navigator.canPop(context);
 
-  static Future to(
+  Future to(
     BuildContext context,
     String action, {
     Map<String, dynamic>? params,
@@ -69,13 +57,10 @@ class Turn {
       turnRouteBuilder: turnRouteBuilder,
     );
 
-    if (shouldTransitionRoute != null &&
-        !await shouldTransitionRoute!(context, opts)) {
+    if (!await shouldTransitionRoute(context, opts)) {
       return Future.value('Refused by [Turn.shouldTransitionRoute]');
     }
-    if (willTransitionRoute != null) {
-      willTransitionRoute!(context, opts);
-    }
+    willTransitionRoute(context, opts);
 
     Future future;
     if (clearStack) {
@@ -95,7 +80,7 @@ class Turn {
     return future;
   }
 
-  static Route _route(
+  Route _route(
     Options opts, {
     BuildContext? context,
     TransitionType transition = TransitionType.native,
@@ -139,21 +124,20 @@ class Turn {
   }
 
   /// ------
-  static Widget? _nextPage(BuildContext context, Options opts) {
+  Widget? _nextPage(BuildContext context, Options opts) {
     var next;
-
-    if (opts.path == Navigator.defaultRouteName && rootPage != null) {
-      next = rootPage!(context, opts);
+    if (opts.path == Navigator.defaultRouteName) {
+      next = rootPage(context, opts);
     } else {
-      next = Mediator.performOptions(context, opts);
-      if ((next == null || next is! Widget) && notFoundNextPage != null) {
-        next = notFoundNextPage!();
+      next = willTransitionPage(context, opts);
+      if (next == null || next is! Widget) {
+        next = notFoundNextPage();
       }
     }
     return next;
   }
 
-  static RouteTransitionsBuilder _standardTransitionsBuilder(
+  RouteTransitionsBuilder _standardTransitionsBuilder(
       TransitionType transitionType) {
     return (BuildContext context, Animation<double> animation,
         Animation<double> secondaryAnimation, Widget child) {
@@ -182,24 +166,5 @@ class Turn {
         );
       }
     };
-  }
-
-  static Route<dynamic> generator(RouteSettings routeSettings) {
-    final arguments = routeSettings.arguments;
-    Map<String, dynamic>? params;
-    Express? express;
-
-    if (arguments is Map<String, dynamic>) {
-      params = arguments;
-    } else if (arguments is Express) {
-      express = arguments;
-    }
-    final Options opts = Options(
-      action: routeSettings.name ?? '',
-      params: params,
-      express: express,
-    );
-
-    return _route(opts);
   }
 }

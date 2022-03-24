@@ -1,6 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:turn/src/express.dart';
-
 import 'opts.dart';
 
 abstract class Target {
@@ -11,61 +9,22 @@ abstract class Target {
   }
 }
 
-class Mediator {
-  static dynamic Function(String? action)? notFound;
-  static List<Target> _mediatorTargets = <Target>[];
+abstract class Adaptor {
+  List<Target> get targets;
 
-  static registerTarget({required Target target}) {
-    if (_mediatorTargets.contains(target)) return;
-    assert(() {
-      _mediatorTargets.forEach((e) {
-        if (e.runtimeType == target.runtimeType) {
-          throw FlutterError.fromParts(<DiagnosticsNode>[
-            ErrorSummary(
-                'Multiple targets is same type [${target.runtimeType}].'),
-            ErrorDescription(
-                'Only one target inserted early will be found out to run a task')
-          ]);
-        }
-      });
-
-      return true;
-    }());
-    _mediatorTargets.add(target);
-  }
-
-  static dynamic perform(
-    String action, {
-    BuildContext? context,
-    Map<String, dynamic>? params,
-    Express? express,
-  }) {
-    assert(action.isNotEmpty, 'action can not be empty!');
-    final opts = Options(action: action, params: params, express: express);
-
-    return performOptions(context, opts);
-  }
-
-  static dynamic performOptions(BuildContext? context, Options opts) {
-    final result = _resolveAction(context, opts);
-    if (result == null && notFound != null) return notFound!(opts.action);
-
-    return result;
-  }
-
-  static dynamic _resolveAction(BuildContext? context, Options opts) {
-    var result;
+  T? resolveAction<T>(BuildContext? context, Options opts) {
+    T? result;
     int i = 0;
-    for (; i < _mediatorTargets.length; i++) {
-      result = _mediatorTargets[i].response(context, opts);
+    for (; i < targets.length; i++) {
+      result = targets[i].response(context, opts);
       if (result != null) break;
     }
     assert(() {
       i++;
       final responseTargets = <Target>[];
       Target t;
-      for (; i < _mediatorTargets.length; i++) {
-        t = _mediatorTargets[i];
+      for (; i < targets.length; i++) {
+        t = targets[i];
         if (t.response(context, opts) != null) responseTargets.add(t);
       }
       if (responseTargets.length > 0) {
@@ -78,5 +37,42 @@ class Mediator {
       return true;
     }());
     return result;
+  }
+}
+
+class _DefaultAdaptor extends Adaptor {
+  @override
+  final List<Target> targets = <Target>[];
+
+  void registerTarget(Target target) {
+    if (targets.contains(target)) return;
+    assert(() {
+      targets.forEach((e) {
+        if (e.runtimeType == target.runtimeType) {
+          throw FlutterError.fromParts(<DiagnosticsNode>[
+            ErrorSummary(
+                'Multiple targets is same type [${target.runtimeType}].'),
+            ErrorDescription(
+                'Only one target inserted early will be found out to run a task')
+          ]);
+        }
+      });
+
+      return true;
+    }());
+    targets.add(target);
+  }
+}
+
+class Mediator {
+  static dynamic Function(String? action)? notFound;
+  static final _DefaultAdaptor _adaptor = _DefaultAdaptor();
+
+  static void registerTarget({required Target target}) {
+    _adaptor.registerTarget(target);
+  }
+
+  static T? performOptions<T>(BuildContext? context, Options opts) {
+    return _adaptor.resolveAction(context, opts);
   }
 }
