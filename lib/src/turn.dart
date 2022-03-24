@@ -1,25 +1,86 @@
 import 'package:flutter/material.dart';
 
+import 'mediator.dart';
 import 'express.dart';
 import 'imp.dart';
-import 'mediator.dart';
 import 'opts.dart';
 
-abstract class Module extends Adaptor {
-  Widget? notFoundNextPage() => null;
+abstract class Target {
+  dynamic task(String action, Map<String, dynamic>? params) {}
 
-  Widget rootPage(BuildContext context, Options options);
+  dynamic response(BuildContext? context, Options options) {
+    return task(options.path, options.params);
+  }
+}
 
-  void willTransitionRoute(BuildContext context, Options options) {}
+abstract class Adaptor {
+  List<Target> get targets;
 
-  Future<bool> shouldTransitionRoute(
-          BuildContext context, Options options) async =>
-      true;
+  T? resolveAction<T>(BuildContext? context, Options opts) {
+    T? result;
+    int i = 0;
+    for (; i < targets.length; i++) {
+      result = targets[i].response(context, opts);
+      if (result != null) break;
+    }
+    assert(() {
+      i++;
+      final responseTargets = <Target>[];
+      Target t;
+      for (; i < targets.length; i++) {
+        t = targets[i];
+        if (t.response(context, opts) != null) responseTargets.add(t);
+      }
+      if (responseTargets.length > 0) {
+        final msg = responseTargets..map((e) => '[${e.toString()}]').join(',');
+        throw FlutterError.fromParts(<DiagnosticsNode>[
+          ErrorSummary('One action got the response of multiple targets'),
+          ErrorDescription('${opts.path}: $msg')
+        ]);
+      }
+      return true;
+    }());
+    return result;
+  }
+}
 
-  Widget? willTransitionPage(BuildContext context, Options options) {
-    return resolveAction<Widget>(context, options);
+abstract class RouteAdaptorHooks extends Adaptor {
+  Widget? notFoundNextPage(BuildContext context, Options options) {
+    if (Turn.notFoundNextPage != null) {
+      return Turn.notFoundNextPage!(context, options);
+    }
+    return null;
   }
 
+  void willTransitionRoute(BuildContext context, Options options) {
+    if (Turn.willTransitionRoute != null) {
+      Turn.willTransitionRoute!(context, options);
+    }
+  }
+
+  Future<bool> shouldTransitionRoute(BuildContext context, Options options) {
+    if (Turn.shouldTransitionRoute != null) {
+      return Turn.shouldTransitionRoute!(context, options);
+    }
+    return Future.value(true);
+  }
+
+  Widget? willTransitionPage(BuildContext context, Options options) {
+    var result;
+    if (Turn.onWillTransitionPage != null) {
+      result = Turn.onWillTransitionPage!(context, options);
+    }
+    if (result == null) {
+      result = resolveAction<Widget>(context, options);
+    }
+    if (result == null) {
+      result = Mediator.performOptions(context, options, this);
+    }
+    return result;
+  }
+}
+
+abstract class Module extends RouteAdaptorHooks {
   void pop<T extends Object>(BuildContext context, [T? result]) =>
       Navigator.pop<T>(context, result);
 
@@ -48,7 +109,7 @@ abstract class Module extends Adaptor {
   }) async {
     final opts = Options(action: action, params: params, express: express);
 
-    final route = _route(
+    final route = buildRoute(
       opts,
       context: context,
       transition: transition,
@@ -80,7 +141,7 @@ abstract class Module extends Adaptor {
     return future;
   }
 
-  Route _route(
+  Route buildRoute(
     Options opts, {
     BuildContext? context,
     TransitionType transition = TransitionType.native,
@@ -125,14 +186,9 @@ abstract class Module extends Adaptor {
 
   /// ------
   Widget? _nextPage(BuildContext context, Options opts) {
-    var next;
-    if (opts.path == Navigator.defaultRouteName) {
-      next = rootPage(context, opts);
-    } else {
-      next = willTransitionPage(context, opts);
-      if (next == null || next is! Widget) {
-        next = notFoundNextPage();
-      }
+    var next = willTransitionPage(context, opts);
+    if (next == null) {
+      next = notFoundNextPage(context, opts);
     }
     return next;
   }

@@ -1,7 +1,6 @@
 import 'package:example/pages4/trun_target.dart';
 import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
-import '../home.dart';
 import '../page1/action_one.dart';
 import '../page2/action_two.dart';
 import '../page3/action_three.dart';
@@ -21,7 +20,7 @@ void registerTargets() {
     print("Turn will push `$opts`.");
   };
 
-  Turn.notFoundNextPage = () {
+  Turn.notFoundNextPage = (c, p) {
     return Scaffold(
       body: Center(
         child: Text(
@@ -33,10 +32,6 @@ void registerTargets() {
         ),
       ),
     );
-  };
-
-  Turn.rootPage = (ctx, opts) {
-    return Home();
   };
 
   Mediator.registerTarget(target: ActionOne());

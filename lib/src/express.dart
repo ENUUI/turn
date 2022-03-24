@@ -11,5 +11,3 @@ abstract class Express {
     ''';
   }
 }
-
-class DefaultExpress extends Express {}

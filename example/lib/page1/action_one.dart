@@ -1,3 +1,4 @@
+import 'package:example/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:turn/turn.dart';
 import 'page1.dart';
@@ -7,6 +8,8 @@ class ActionOne extends Target {
   @override
   response(BuildContext? context, Options options) {
     switch (options.path) {
+      case '/':
+        return Home();
       case "/page1/page_one":
         print(options.express);
         return PageOne(

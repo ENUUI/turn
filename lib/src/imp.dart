@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:turn/src/express.dart';
+import 'package:turn/src/turn.dart';
 import 'mediator.dart';
 import 'opts.dart';
 
@@ -23,27 +24,26 @@ typedef TurnRouteBuilder = Route Function(
 class Turn {
   Turn._();
 
-  static Widget Function()? notFoundNextPage;
-  static Widget Function(BuildContext context, Options)? rootPage;
+  static Module get _adaptor => Mediator.adaptor;
+  static Widget Function(BuildContext, Options)? notFoundNextPage;
 
   static void Function(BuildContext context, Options)? willTransitionRoute;
   static Future<bool> Function(BuildContext context, Options)?
       shouldTransitionRoute;
 
+  static Widget Function(BuildContext context, Options)? onWillTransitionPage;
+
   static void pop<T extends Object>(BuildContext context, [T? result]) =>
-      Navigator.pop<T>(context, result);
+      _adaptor.pop<T>(context, result);
 
   static Future<bool> maybePop<T extends Object>(BuildContext context,
           [T? result]) =>
-      Navigator.maybePop<T>(context, result);
+      _adaptor.maybePop<T>(context, result);
 
   static void popUntil(BuildContext context, String action) =>
-      Navigator.popUntil(
-        context,
-        ModalRoute.withName(Options(action: action).path),
-      );
+      _adaptor.popUntil(context, action);
 
-  static bool canPop(BuildContext context) => Navigator.canPop(context);
+  static bool canPop(BuildContext context) => _adaptor.canPop(context);
 
   static Future to(
     BuildContext context,
@@ -58,41 +58,19 @@ class Turn {
     TurnRouteBuilder? turnRouteBuilder,
     RoutePredicate? predicate, // clearStack = true
   }) async {
-    final opts = Options(action: action, params: params, express: express);
-
-    final route = _route(
-      opts,
-      context: context,
+    return Mediator.adaptor.to(
+      context,
+      action,
+      params: params,
+      express: express,
+      replace: replace,
+      clearStack: clearStack,
       transition: transition,
       transitionBuilder: transitionBuilder,
       duration: duration,
       turnRouteBuilder: turnRouteBuilder,
+      predicate: predicate,
     );
-
-    if (shouldTransitionRoute != null &&
-        !await shouldTransitionRoute!(context, opts)) {
-      return Future.value('Refused by [Turn.shouldTransitionRoute]');
-    }
-    if (willTransitionRoute != null) {
-      willTransitionRoute!(context, opts);
-    }
-
-    Future future;
-    if (clearStack) {
-      future = Navigator.pushAndRemoveUntil(
-        context,
-        route,
-        predicate ?? (c) => false,
-      );
-    } else {
-      if (replace) {
-        future = Navigator.pushReplacement(context, route);
-      } else {
-        future = Navigator.push(context, route);
-      }
-    }
-
-    return future;
   }
 
   static Route _route(
@@ -103,85 +81,14 @@ class Turn {
     Duration duration = const Duration(milliseconds: 250),
     TurnRouteBuilder? turnRouteBuilder,
   }) {
-    final _routeSettings = RouteSettings(name: opts.path);
-    bool isNativeTransition = (transition == TransitionType.native ||
-        transition == TransitionType.nativeModal);
-
-    if (isNativeTransition) {
-      return MaterialPageRoute<dynamic>(
-          settings: _routeSettings,
-          fullscreenDialog: transition == TransitionType.nativeModal,
-          builder: (context) {
-            return _nextPage(context, opts)!;
-          });
-    } else if (transition == TransitionType.customRoute) {
-      return turnRouteBuilder!(
-        context,
-        (context) => _nextPage(context, opts),
-      );
-    } else {
-      var transitionsBuilder;
-      if (transition == TransitionType.custom) {
-        transitionsBuilder = transitionBuilder;
-      } else {
-        transitionsBuilder = _standardTransitionsBuilder(transition);
-      }
-
-      return PageRouteBuilder<dynamic>(
-        settings: _routeSettings,
-        transitionDuration: duration,
-        transitionsBuilder: transitionsBuilder,
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return _nextPage(context, opts)!;
-        },
-      );
-    }
-  }
-
-  /// ------
-  static Widget? _nextPage(BuildContext context, Options opts) {
-    var next;
-
-    if (opts.path == Navigator.defaultRouteName && rootPage != null) {
-      next = rootPage!(context, opts);
-    } else {
-      next = Mediator.performOptions(context, opts);
-      if ((next == null || next is! Widget) && notFoundNextPage != null) {
-        next = notFoundNextPage!();
-      }
-    }
-    return next;
-  }
-
-  static RouteTransitionsBuilder _standardTransitionsBuilder(
-      TransitionType transitionType) {
-    return (BuildContext context, Animation<double> animation,
-        Animation<double> secondaryAnimation, Widget child) {
-      if (transitionType == TransitionType.fadeIn) {
-        return FadeTransition(opacity: animation, child: child);
-      } else {
-        const Offset topLeft = const Offset(0.0, 0.0);
-        const Offset topRight = const Offset(1.0, 0.0);
-        const Offset bottomLeft = const Offset(0.0, 1.0);
-        Offset startOffset = bottomLeft;
-        Offset endOffset = topLeft;
-        if (transitionType == TransitionType.inFromLeft) {
-          startOffset = const Offset(-1.0, 0.0);
-          endOffset = topLeft;
-        } else if (transitionType == TransitionType.inFromRight) {
-          startOffset = topRight;
-          endOffset = topLeft;
-        }
-
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: startOffset,
-            end: endOffset,
-          ).animate(animation),
-          child: child,
-        );
-      }
-    };
+    return Mediator.adaptor.buildRoute(
+      opts,
+      context: context,
+      transition: transition,
+      transitionBuilder: transitionBuilder,
+      duration: duration,
+      turnRouteBuilder: turnRouteBuilder,
+    );
   }
 
   static Route<dynamic> generator(RouteSettings routeSettings) {
