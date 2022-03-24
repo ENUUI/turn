@@ -4,7 +4,7 @@ import 'express.dart';
 import 'opts.dart';
 import 'turn.dart';
 
-class _DefaultAdaptor extends Module {
+class _DefaultAdaptor extends RouteModule {
   @override
   final List<Target> targets = <Target>[];
 
@@ -65,7 +65,7 @@ class _DefaultAdaptor extends Module {
 class Mediator {
   static dynamic Function(String? action)? notFound;
 
-  static Module get adaptor => _adaptor;
+  static RouteModule get adaptor => _adaptor;
   static final _DefaultAdaptor _adaptor = _DefaultAdaptor();
 
   static void registerTarget<T extends Target>({required T target}) {

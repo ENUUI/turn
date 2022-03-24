@@ -36,6 +36,8 @@ void registerTargets() {
 
   Mediator.registerTarget(target: ActionOne());
   Mediator.registerTarget(target: ActionTwo());
-  Mediator.registerTarget(target: ActionThree());
+  // Mediator.registerTarget(target: ActionThree());
   Mediator.registerTarget(target: Target4());
+
+  Mediator.registerModule(RouteModule4());
 }

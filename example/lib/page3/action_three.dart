@@ -25,3 +25,8 @@ class ActionThree extends Target {
     return null;
   }
 }
+
+class RouteModule4 extends RouteModule {
+  @override
+  List<Target> get targets => [ActionThree()];
+}

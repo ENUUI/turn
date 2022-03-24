@@ -24,7 +24,7 @@ typedef TurnRouteBuilder = Route Function(
 class Turn {
   Turn._();
 
-  static Module get _adaptor => Mediator.adaptor;
+  static RouteModule get _adaptor => Mediator.adaptor;
   static Widget Function(BuildContext, Options)? notFoundNextPage;
 
   static void Function(BuildContext context, Options)? willTransitionRoute;

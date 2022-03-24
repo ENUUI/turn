@@ -60,6 +60,10 @@ class _HomeState extends State<Home> {
         Turn.to(context, '/refuse');
       });
 
+  Widget _build6() => _buildButton('Module', () {
+        Turn.to(context, '/action_three/page_t1');
+      });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +78,8 @@ class _HomeState extends State<Home> {
               _build2(),
               _build3(),
               _build4(),
-              _build5()
+              _build5(),
+              _build6()
             ],
           )),
     );

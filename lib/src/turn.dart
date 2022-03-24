@@ -80,7 +80,7 @@ abstract class RouteAdaptorHooks extends Adaptor {
   }
 }
 
-abstract class Module extends RouteAdaptorHooks {
+abstract class RouteModule extends RouteAdaptorHooks {
   void pop<T extends Object>(BuildContext context, [T? result]) =>
       Navigator.pop<T>(context, result);
 
