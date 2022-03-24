@@ -1,14 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:turn/src/imp.dart';
 import 'package:turn/src/express.dart';
 
 import 'opts.dart';
 
 abstract class Target {
-  @Deprecated('Will be removed in Turn 1.0.0')
-  String? get targetName => null;
-
-  @Deprecated('Will be removed in Turn 1.0.0')
   dynamic task(String action, Map<String, dynamic>? params) {}
 
   dynamic response(BuildContext? context, Options options) {
@@ -17,26 +12,8 @@ abstract class Target {
 }
 
 class Mediator {
-  // Invoke when action is not found.
-  // An error handler can be returned at this time.
   static dynamic Function(String? action)? notFound;
-
-  // static var _mediatorTarget = Map<String, Target>();
   static List<Target> _mediatorTargets = <Target>[];
-
-  /// [Turn.rootPage]
-  @Deprecated('Use imp [Turn.rootPage] instead. Will be removed in Turn 1.0.0')
-  static set rootPage(dynamic Function(Map<String, dynamic>?)? value) {
-    assert(() {
-      print('[Mediator.rootPage] is deprecated, use [Turn.rootPage] instead');
-      return true;
-    }());
-    if (value != null) {
-      Turn.rootPage = (context, opts) {
-        return value(opts.params);
-      };
-    }
-  }
 
   static registerTarget({required Target target}) {
     if (_mediatorTargets.contains(target)) return;
@@ -44,8 +21,10 @@ class Mediator {
       _mediatorTargets.forEach((e) {
         if (e.runtimeType == target.runtimeType) {
           throw FlutterError.fromParts(<DiagnosticsNode>[
-            ErrorSummary('Multiple targets is same type [${target.runtimeType}].'),
-            ErrorDescription('Only one target inserted early will be found out to run a task')
+            ErrorSummary(
+                'Multiple targets is same type [${target.runtimeType}].'),
+            ErrorDescription(
+                'Only one target inserted early will be found out to run a task')
           ]);
         }
       });
@@ -55,9 +34,6 @@ class Mediator {
     _mediatorTargets.add(target);
   }
 
-  /// Find out the registered Target by the action's first component
-  /// which should be the Target's name;
-  /// Then, the Target will receive the params and execute the action.
   static dynamic perform(
     String action, {
     BuildContext? context,

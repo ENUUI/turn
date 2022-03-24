@@ -26,43 +26,6 @@ class Turn {
   static Widget Function()? notFoundNextPage;
   static Widget Function(BuildContext context, Options)? rootPage;
 
-  @Deprecated(
-      'Use imp [Turn.willTransitionRoute] instead. Will be removed in Turn 1.0.0')
-  static set willPushRoute(
-      void Function(BuildContext context, String route)? value) {
-    assert(() {
-      print('''
-      [willPushRoute] is deprecated!!!
-      Use imp [Turn.willTransitionRoute] instead. Will be removed in Turn 1.0.0
-      ''');
-      return true;
-    }());
-
-    if (value != null && Turn.willTransitionRoute == null) {
-      Turn.willTransitionRoute = (context, opts) {
-        return value(context, opts.action);
-      };
-    }
-  }
-
-  @Deprecated(
-      'Use imp [Turn.shouldTransitionRoute] instead. Will be removed in Turn 1.0.0')
-  static set shouldPushRoute(
-      bool Function(BuildContext context, String route)? value) {
-    assert(() {
-      print('''
-      [shouldPushRoute] is deprecated!!!
-      Use imp [Turn.shouldTransitionRoute] instead. Will be removed in Turn 1.0.0
-      ''');
-      return true;
-    }());
-    if (value != null && Turn.shouldTransitionRoute == null) {
-      Turn.shouldTransitionRoute = (context, opts) async {
-        return value(context, opts.action);
-      };
-    }
-  }
-
   static void Function(BuildContext context, Options)? willTransitionRoute;
   static Future<bool> Function(BuildContext context, Options)?
       shouldTransitionRoute;
@@ -177,7 +140,7 @@ class Turn {
 
   /// ------
   static Widget? _nextPage(BuildContext context, Options opts) {
-    Widget? next;
+    var next;
 
     if (opts.path == Navigator.defaultRouteName && rootPage != null) {
       next = rootPage!(context, opts);
