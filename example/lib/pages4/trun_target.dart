@@ -6,14 +6,14 @@ import 'package:turn/turn.dart';
 
 class Target4 extends Target {
   @override
-  response(BuildContext context, Options options) {
+  dynamic response(BuildContext? context, Options options) {
     switch (options.path) {
       case '/page4/timeline':
-        return TimelinePage(options.express);
+        return TimelinePage(options.express as TimelineQuery?);
       case '/page4/account':
-        return AccountPage(options.express);
+        return AccountPage(options.express as AccountQuery?);
       case '/page4/discovery':
-        return DiscoveryPage(options.express);
+        return DiscoveryPage(options.express as DiscoveryQuery?);
     }
   }
 }

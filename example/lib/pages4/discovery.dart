@@ -18,7 +18,7 @@ class DiscoveryQuery extends Express {
 }
 
 class DiscoveryPage extends TurnPage {
-  DiscoveryPage(DiscoveryQuery query) : super(query: query);
+  DiscoveryPage(DiscoveryQuery? query) : super(query: query);
 
   @override
   void onTap(BuildContext context) {

@@ -10,7 +10,7 @@ class AccountQuery extends Express {
 }
 
 class AccountPage extends TurnPage {
-  AccountPage(AccountQuery query) : super(query: query);
+  AccountPage(AccountQuery? query) : super(query: query);
 
   @override
   void onTap(BuildContext context) {

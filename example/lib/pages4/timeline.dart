@@ -6,7 +6,7 @@ import 'package:turn/turn.dart';
 class TimelineQuery extends Express {
   TimelineQuery(this.desc);
 
-  final String desc;
+  final String? desc;
 
   @override
   String toString() {
@@ -17,7 +17,7 @@ class TimelineQuery extends Express {
 }
 
 class TimelinePage extends TurnPage {
-  TimelinePage(TimelineQuery query) : super(query: query);
+  TimelinePage(TimelineQuery? query) : super(query: query);
 
   @override
   void onTap(BuildContext context) {

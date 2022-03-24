@@ -5,7 +5,7 @@ import 'page3_remove.dart';
 
 class ActionThree extends Target {
   @override
-  response(BuildContext context, Options options) {
+  response(BuildContext? context, Options options) {
     switch (options.path) {
       case '/action_three/page_t1':
         return PageT1();

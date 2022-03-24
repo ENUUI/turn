@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class PageThree extends StatelessWidget {
-  final Map<String, dynamic> params;
+  final Map<String, dynamic>? params;
 
-  PageThree({
-    this.params,
-  });
+  PageThree({this.params});
 
   @override
   Widget build(BuildContext context) {
-    var params = this.params != null ? this.params : {};
+    var params = this.params != null ? this.params! : {};
 
     return new Container(
       padding: EdgeInsets.only(top: 100.0),
@@ -53,10 +51,7 @@ class PageThree extends StatelessWidget {
               ),
             ),
             FlatButton(
-                onPressed: () {
-                  var result = Mediator.perform("/page2/get_data");
-                  print("从package: page2 获取的数据:\n --------- $result");
-                },
+                onPressed: () {},
                 child: Text(
                   "点击获取 package: page2 的数据。",
                   textAlign: TextAlign.center,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class PageOne extends StatelessWidget {
-  final Map<String, dynamic> params;
+  final Map<String, dynamic>? params;
 
   PageOne({this.params});
 
@@ -31,7 +31,7 @@ class PageOne extends StatelessWidget {
 //              Navigator.pushNamed(context, '/page2/page_two');
         },
         child: _buildButton(Text(
-          "页面一\ntitle: ${params["title"] ?? "没有标题"} \n message: ${params["message"] ?? "没有数据"}\n\n点击跳转到下一个界面",
+          "页面一\ntitle: ${params?["title"] ?? "没有标题"} \n message: ${params?["message"] ?? "没有数据"}\n\n点击跳转到下一个界面",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 13.0,

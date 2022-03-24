@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class PageTwo extends StatelessWidget {
-  final Map<String, dynamic> params;
+  final Map<String, dynamic>? params;
 
   PageTwo({this.params});
 
   @override
   Widget build(BuildContext context) {
-    var params = this.params != null ? this.params : {};
+    var params = this.params != null ? this.params! : {};
 
     return new Container(
       padding: EdgeInsets.only(top: 100.0),

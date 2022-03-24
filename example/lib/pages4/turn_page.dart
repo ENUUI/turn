@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 abstract class TurnPage<T extends Express> extends StatelessWidget {
-  const TurnPage({Key key, this.query}) : super(key: key);
-  final T query;
+  const TurnPage({Key? key, this.query}) : super(key: key);
+  final T? query;
 
   String get title => 'Turn Page';
 
