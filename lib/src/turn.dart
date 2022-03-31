@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'mediator.dart';
 import 'express.dart';
-import 'imp.dart';
 import 'opts.dart';
 
 enum TransitionType {
@@ -29,7 +28,7 @@ abstract class Target {
   }
 }
 
-abstract class RouteHooks {
+abstract class AdaptorDelegate {
   Widget? notFoundNextPage(BuildContext context, Options options);
 
   void willTransitionRoute(BuildContext context, Options options);
@@ -41,6 +40,8 @@ abstract class RouteHooks {
 
 abstract class Adaptor {
   List<Target> get targets;
+
+  AdaptorDelegate? get adaptorDelegate => null;
 
   T? resolveAction<T>(BuildContext? context, Options opts) {
     T? result;
@@ -97,42 +98,28 @@ abstract class Adaptor {
   }
 }
 
-abstract class RouteAdaptorHooks extends Adaptor {
+abstract class RouteAdaptor extends Adaptor {
   Widget? notFoundNextPage(BuildContext context, Options options) {
-    if (Turn.notFoundNextPage != null) {
-      return Turn.notFoundNextPage!(context, options);
-    }
-    return null;
+    return adaptorDelegate?.notFoundNextPage(context, options);
   }
 
   void willTransitionRoute(BuildContext context, Options options) {
-    if (Turn.willTransitionRoute != null) {
-      Turn.willTransitionRoute!(context, options);
-    }
+    adaptorDelegate?.willTransitionRoute(context, options);
   }
 
   Future<bool> shouldTransitionRoute(BuildContext context, Options options) {
-    if (Turn.shouldTransitionRoute != null) {
-      return Turn.shouldTransitionRoute!(context, options);
-    }
-    return Future.value(true);
+    return adaptorDelegate?.shouldTransitionRoute(context, options) ??
+        Future.value(true);
   }
 
   Widget? willTransitionPage(BuildContext context, Options options) {
-    var result;
-    if (Turn.onWillTransitionPage != null) {
-      result = Turn.onWillTransitionPage!(context, options);
-    }
-
-    if (result != null) {
-      return result;
-    }
-
-    return performOptions(options, context: context);
+    final nextPage = adaptorDelegate?.willTransitionPage(context, options);
+    if (nextPage != null) return nextPage;
+    return performOptions<Widget>(options, context: context);
   }
 }
 
-abstract class RouteModule extends RouteAdaptorHooks {
+abstract class RouteModule extends RouteAdaptor {
   void pop<T extends Object>(BuildContext context, [T? result]) =>
       Navigator.pop<T>(context, result);
 

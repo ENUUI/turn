@@ -11,7 +11,7 @@ class Mediator {
     _adaptor.registerTarget(target);
   }
 
-  static void registerModule<T extends RouteAdaptorHooks>(T module) {
+  static void registerModule<T extends RouteAdaptor>(T module) {
     _adaptor.registerModule(module);
   }
 
@@ -28,7 +28,7 @@ class _DefaultAdaptor extends RouteModule {
   @override
   final List<Target> targets = <Target>[];
 
-  final List<RouteAdaptorHooks> subModules = <RouteAdaptorHooks>[];
+  final List<RouteAdaptor> subModules = <RouteAdaptor>[];
 
   void registerTarget<T extends Target>(T target) {
     if (targets.contains(target)) return;
@@ -36,7 +36,7 @@ class _DefaultAdaptor extends RouteModule {
     targets.add(target);
   }
 
-  void registerModule<T extends RouteAdaptorHooks>(T module) {
+  void registerModule<T extends RouteAdaptor>(T module) {
     if (subModules.contains(module)) return;
     assert(_debugDuplicateCheck(subModules, module));
     subModules.add(module);

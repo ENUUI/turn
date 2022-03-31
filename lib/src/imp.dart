@@ -10,13 +10,6 @@ class Turn {
   Turn._();
 
   static RouteModule get _adaptor => Mediator.adaptor;
-  static Widget Function(BuildContext, Options)? notFoundNextPage;
-
-  static void Function(BuildContext context, Options)? willTransitionRoute;
-  static Future<bool> Function(BuildContext context, Options)?
-      shouldTransitionRoute;
-
-  static Widget Function(BuildContext context, Options)? onWillTransitionPage;
 
   static void pop<T extends Object>(BuildContext context, [T? result]) =>
       _adaptor.pop<T>(context, result);
