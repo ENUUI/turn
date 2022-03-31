@@ -5,7 +5,6 @@ import 'package:turn/src/turn.dart';
 import 'mediator.dart';
 import 'opts.dart';
 
-
 class Turn {
   Turn._();
 
@@ -51,24 +50,6 @@ class Turn {
     );
   }
 
-  static Route _route(
-    Options opts, {
-    BuildContext? context,
-    TransitionType transition = TransitionType.native,
-    RouteTransitionsBuilder? transitionBuilder,
-    Duration duration = const Duration(milliseconds: 250),
-    TurnRouteBuilder? turnRouteBuilder,
-  }) {
-    return Mediator.adaptor.buildRoute(
-      opts,
-      context: context,
-      transition: transition,
-      transitionBuilder: transitionBuilder,
-      duration: duration,
-      turnRouteBuilder: turnRouteBuilder,
-    );
-  }
-
   static Route<dynamic> generator(RouteSettings routeSettings) {
     final arguments = routeSettings.arguments;
     Map<String, dynamic>? params;
@@ -84,7 +65,18 @@ class Turn {
       params: params,
       express: express,
     );
-
-    return _route(opts);
+    return MaterialPageRoute(builder: (context) {
+      final page = Mediator.perform<Widget>(context, opts);
+      if (page != null) return page;
+      final page404 = Mediator.notFound?.call(context, opts);
+      if (page404 != null && page404 is Widget) return page404;
+      assert(() {
+        throw throw FlutterError.fromParts(<DiagnosticsNode>[
+          ErrorSummary('Page Not Found!'),
+          ErrorDescription('${opts.toString()}')
+        ]);
+      }());
+      return const Scaffold();
+    });
   }
 }
