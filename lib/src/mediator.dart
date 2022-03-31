@@ -1,8 +1,28 @@
 import 'package:flutter/widgets.dart';
 
-import 'express.dart';
 import 'opts.dart';
 import 'turn.dart';
+
+class Mediator {
+  static RouteModule get adaptor => _adaptor;
+  static final _DefaultAdaptor _adaptor = _DefaultAdaptor();
+
+  static void registerTarget<T extends Target>({required T target}) {
+    _adaptor.registerTarget(target);
+  }
+
+  static void registerModule<T extends RouteAdaptorHooks>(T module) {
+    _adaptor.registerModule(module);
+  }
+
+  static T? performOptions<T>(
+    BuildContext? context,
+    Options opts, [
+    Adaptor? excludeModule,
+  ]) {
+    return _adaptor.resolveFallThroughAction<T>(context, opts, excludeModule);
+  }
+}
 
 class _DefaultAdaptor extends RouteModule {
   @override
@@ -25,7 +45,7 @@ class _DefaultAdaptor extends RouteModule {
   T? resolveFallThroughAction<T>(
     BuildContext? context,
     Options opts, [
-    RouteAdaptorHooks? excludeModule,
+    Adaptor? excludeModule,
   ]) {
     var result = resolveAction<T>(context, opts);
 
@@ -59,44 +79,5 @@ class _DefaultAdaptor extends RouteModule {
       return true;
     }());
     return true;
-  }
-}
-
-class Mediator {
-  static dynamic Function(String? action)? notFound;
-
-  static RouteModule get adaptor => _adaptor;
-  static final _DefaultAdaptor _adaptor = _DefaultAdaptor();
-
-  static void registerTarget<T extends Target>({required T target}) {
-    _adaptor.registerTarget(target);
-  }
-
-  static void registerModule<T extends RouteAdaptorHooks>(T module) {
-    _adaptor.registerModule(module);
-  }
-
-  static T? perform<T>(
-    String action, {
-    BuildContext? context,
-    Map<String, dynamic>? params,
-    Express? express,
-  }) {
-    assert(action.isNotEmpty, 'action can not be empty!');
-    final opts = Options(action: action, params: params, express: express);
-
-    return performOptions(context, opts);
-  }
-
-  static T? performOptions<T>(
-    BuildContext? context,
-    Options opts, [
-    RouteAdaptorHooks? excludeModule,
-  ]) {
-    T? result = _adaptor.resolveFallThroughAction(context, opts, excludeModule);
-    if (result == null && notFound != null) {
-      result = notFound!(opts.path);
-    }
-    return result;
   }
 }

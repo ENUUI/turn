@@ -5,12 +5,38 @@ import 'express.dart';
 import 'imp.dart';
 import 'opts.dart';
 
+enum TransitionType {
+  native,
+  nativeModal,
+  inFromLeft,
+  inFromRight,
+  inFromBottom,
+  fadeIn,
+  custom, // Custom RouteTransitionsBuilder
+  customRoute, // Custom Route
+}
+
+typedef TurnRouteBuilder = Route Function(
+  BuildContext? context,
+  Widget? Function(BuildContext context) nextPageBuilder,
+);
+
 abstract class Target {
   dynamic task(String action, Map<String, dynamic>? params) {}
 
   dynamic response(BuildContext? context, Options options) {
     return task(options.path, options.params);
   }
+}
+
+abstract class RouteHooks {
+  Widget? notFoundNextPage(BuildContext context, Options options);
+
+  void willTransitionRoute(BuildContext context, Options options);
+
+  Future<bool> shouldTransitionRoute(BuildContext context, Options options);
+
+  Widget? willTransitionPage(BuildContext context, Options options);
 }
 
 abstract class Adaptor {
@@ -42,6 +68,33 @@ abstract class Adaptor {
     }());
     return result;
   }
+
+  T? perform<T>(
+    String action, {
+    Map<String, dynamic>? params,
+    BuildContext? context,
+    Express? express,
+    bool innerPackage = false,
+  }) {
+    final options = Options(action: action, params: params, express: express);
+    return performOptions<T>(
+      options,
+      context: context,
+      innerPackage: innerPackage,
+    );
+  }
+
+  T? performOptions<T>(
+    Options options, {
+    BuildContext? context,
+    bool innerPackage = false,
+  }) {
+    final result = resolveAction<T>(context, options);
+    if (result != null || innerPackage) {
+      return result;
+    }
+    return Mediator.performOptions<T>(context, options, this);
+  }
 }
 
 abstract class RouteAdaptorHooks extends Adaptor {
@@ -70,13 +123,12 @@ abstract class RouteAdaptorHooks extends Adaptor {
     if (Turn.onWillTransitionPage != null) {
       result = Turn.onWillTransitionPage!(context, options);
     }
-    if (result == null) {
-      result = resolveAction<Widget>(context, options);
+
+    if (result != null) {
+      return result;
     }
-    if (result == null) {
-      result = Mediator.performOptions(context, options, this);
-    }
-    return result;
+
+    return performOptions(options, context: context);
   }
 }
 

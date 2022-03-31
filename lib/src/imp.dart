@@ -5,21 +5,6 @@ import 'package:turn/src/turn.dart';
 import 'mediator.dart';
 import 'opts.dart';
 
-enum TransitionType {
-  native,
-  nativeModal,
-  inFromLeft,
-  inFromRight,
-  inFromBottom,
-  fadeIn,
-  custom, // Custom RouteTransitionsBuilder
-  customRoute, // Custom Route
-}
-
-typedef TurnRouteBuilder = Route Function(
-  BuildContext? context,
-  Widget? Function(BuildContext context) nextPageBuilder,
-);
 
 class Turn {
   Turn._();
