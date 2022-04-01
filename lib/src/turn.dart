@@ -15,6 +15,9 @@ enum TransitionType {
   customRoute, // Custom Route
 }
 
+typedef TurnPageBuilder = Widget? Function(
+    BuildContext context, Options options);
+
 typedef TurnRouteBuilder = Route Function(
   BuildContext? context,
   Widget? Function(BuildContext context) nextPageBuilder,
@@ -28,20 +31,8 @@ abstract class Target {
   }
 }
 
-abstract class AdaptorDelegate {
-  Widget? notFoundNextPage(BuildContext context, Options options);
-
-  void willTransitionRoute(BuildContext context, Options options);
-
-  Future<bool> shouldTransitionRoute(BuildContext context, Options options);
-
-  Widget? willTransitionPage(BuildContext context, Options options);
-}
-
 abstract class Adaptor {
   List<Target> get targets;
-
-  AdaptorDelegate? get adaptorDelegate => null;
 
   T? resolveAction<T>(BuildContext? context, Options opts) {
     T? result;
@@ -71,21 +62,6 @@ abstract class Adaptor {
   }
 
   T? perform<T>(
-    String action, {
-    Map<String, dynamic>? params,
-    BuildContext? context,
-    Express? express,
-    bool innerPackage = false,
-  }) {
-    final options = Options(action: action, params: params, express: express);
-    return performOptions<T>(
-      options,
-      context: context,
-      innerPackage: innerPackage,
-    );
-  }
-
-  T? performOptions<T>(
     Options options, {
     BuildContext? context,
     bool innerPackage = false,
@@ -94,28 +70,31 @@ abstract class Adaptor {
     if (result != null || innerPackage) {
       return result;
     }
-    return Mediator.performOptions<T>(context, options, this);
+    return Mediator.perform<T>(context, options, this);
   }
 }
 
 abstract class RouteAdaptor extends Adaptor {
   Widget? notFoundNextPage(BuildContext context, Options options) {
-    return adaptorDelegate?.notFoundNextPage(context, options);
+    return null;
   }
 
-  void willTransitionRoute(BuildContext context, Options options) {
-    adaptorDelegate?.willTransitionRoute(context, options);
-  }
+  void willTransitionRoute(BuildContext context, Options options) {}
 
   Future<bool> shouldTransitionRoute(BuildContext context, Options options) {
-    return adaptorDelegate?.shouldTransitionRoute(context, options) ??
-        Future.value(true);
+    return Future.value(true);
   }
 
-  Widget? willTransitionPage(BuildContext context, Options options) {
-    final nextPage = adaptorDelegate?.willTransitionPage(context, options);
-    if (nextPage != null) return nextPage;
-    return performOptions<Widget>(options, context: context);
+  Widget? willTransitionPage(
+    BuildContext context,
+    Options options,
+    bool innerPackage,
+  ) {
+    return perform<Widget>(
+      options,
+      context: context,
+      innerPackage: innerPackage,
+    );
   }
 }
 
@@ -138,6 +117,7 @@ abstract class RouteModule extends RouteAdaptor {
     String action, {
     Map<String, dynamic>? params,
     Express? express,
+    String? package,
     bool replace = false,
     bool clearStack = false,
     TransitionType transition = TransitionType.native,
@@ -145,6 +125,47 @@ abstract class RouteModule extends RouteAdaptor {
     Duration duration = const Duration(milliseconds: 250),
     TurnRouteBuilder? turnRouteBuilder,
     RoutePredicate? predicate, // clearStack = true
+    bool innerPackage = false,
+  }) async {
+    RouteModule? routeModule;
+    if (package == null || package.isEmpty) {
+      routeModule = this;
+    } else {
+      routeModule = Mediator.moduleOf(package);
+      assert(routeModule != null);
+    }
+    if (routeModule == null) {
+      return Future.error('Not found the routeModule of package($package)');
+    }
+    return routeModule._to(
+      context,
+      action,
+      params: params,
+      express: express,
+      replace: replace,
+      clearStack: clearStack,
+      transition: transition,
+      transitionBuilder: transitionBuilder,
+      duration: duration,
+      turnRouteBuilder: turnRouteBuilder,
+      predicate: predicate,
+      innerPackage: innerPackage,
+    );
+  }
+
+  Future _to(
+    BuildContext context,
+    String action, {
+    Map<String, dynamic>? params,
+    Express? express,
+    bool replace = false,
+    bool clearStack = false,
+    TransitionType transition = TransitionType.native,
+    RouteTransitionsBuilder? transitionBuilder,
+    Duration duration = const Duration(milliseconds: 250),
+    TurnRouteBuilder? turnRouteBuilder,
+    RoutePredicate? predicate, // clearStack = true
+    bool innerPackage = false,
   }) async {
     final opts = Options(action: action, params: params, express: express);
 
@@ -155,13 +176,14 @@ abstract class RouteModule extends RouteAdaptor {
       transitionBuilder: transitionBuilder,
       duration: duration,
       turnRouteBuilder: turnRouteBuilder,
+      innerPackage: innerPackage,
     );
 
     if (!await shouldTransitionRoute(context, opts)) {
       return Future.value('Refused by [Turn.shouldTransitionRoute]');
     }
     willTransitionRoute(context, opts);
-
+    TurnAdaptorObserver.instance._willTransitionRoute(context, opts);
     Future future;
     if (clearStack) {
       future = Navigator.pushAndRemoveUntil(
@@ -187,6 +209,7 @@ abstract class RouteModule extends RouteAdaptor {
     RouteTransitionsBuilder? transitionBuilder,
     Duration duration = const Duration(milliseconds: 250),
     TurnRouteBuilder? turnRouteBuilder,
+    bool innerPackage = false,
   }) {
     final _routeSettings = RouteSettings(name: opts.path);
     bool isNativeTransition = (transition == TransitionType.native ||
@@ -197,12 +220,12 @@ abstract class RouteModule extends RouteAdaptor {
           settings: _routeSettings,
           fullscreenDialog: transition == TransitionType.nativeModal,
           builder: (context) {
-            return _nextPage(context, opts)!;
+            return _nextPage(context, opts, innerPackage)!;
           });
     } else if (transition == TransitionType.customRoute) {
       return turnRouteBuilder!(
         context,
-        (context) => _nextPage(context, opts),
+        (context) => _nextPage(context, opts, innerPackage),
       );
     } else {
       var transitionsBuilder;
@@ -217,15 +240,15 @@ abstract class RouteModule extends RouteAdaptor {
         transitionDuration: duration,
         transitionsBuilder: transitionsBuilder,
         pageBuilder: (context, animation, secondaryAnimation) {
-          return _nextPage(context, opts)!;
+          return _nextPage(context, opts, innerPackage)!;
         },
       );
     }
   }
 
   /// ------
-  Widget? _nextPage(BuildContext context, Options opts) {
-    var next = willTransitionPage(context, opts);
+  Widget? _nextPage(BuildContext context, Options opts, bool innerPackage) {
+    var next = willTransitionPage(context, opts, innerPackage);
     if (next == null) {
       next = notFoundNextPage(context, opts);
     }
@@ -261,5 +284,38 @@ abstract class RouteModule extends RouteAdaptor {
         );
       }
     };
+  }
+}
+
+mixin TurnAdaptorObserverMixin {
+  void willTransitionRoute(BuildContext context, Options options);
+}
+
+class TurnAdaptorObserver  {
+  TurnAdaptorObserver._();
+
+  static TurnAdaptorObserver get instance {
+    _instance ??= TurnAdaptorObserver._();
+    return _instance!;
+  }
+  static TurnAdaptorObserver? _instance;
+
+  final List<TurnAdaptorObserverMixin> _observers =
+  <TurnAdaptorObserverMixin>[];
+
+  void registerObserver<T extends TurnAdaptorObserverMixin>(T delegate) {
+    if (_observers.contains(delegate)) return;
+    _observers.add(delegate);
+  }
+
+  void removeObserver<T extends TurnAdaptorObserverMixin>(T delegate) {
+    _observers.remove(delegate);
+  }
+
+  void _willTransitionRoute(BuildContext context, Options options) {
+    if (_observers.isEmpty) return;
+    _observers.forEach((observer) {
+      observer.willTransitionRoute(context, options);
+    });
   }
 }
