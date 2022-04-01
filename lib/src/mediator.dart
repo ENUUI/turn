@@ -44,7 +44,7 @@ class Mediator {
   }
 
   static T? perform<T>(
-    BuildContext? context,
+    BuildContext context,
     Options opts, [
     Adaptor? excludeModule,
   ]) {

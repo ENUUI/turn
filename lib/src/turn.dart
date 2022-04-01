@@ -62,8 +62,8 @@ abstract class Adaptor {
   }
 
   T? perform<T>(
+    BuildContext context,
     Options options, {
-    BuildContext? context,
     bool innerPackage = false,
   }) {
     final result = resolveAction<T>(context, options);
@@ -91,8 +91,8 @@ abstract class RouteAdaptor extends Adaptor {
     bool innerPackage,
   ) {
     return perform<Widget>(
+      context,
       options,
-      context: context,
       innerPackage: innerPackage,
     );
   }
@@ -170,8 +170,8 @@ abstract class RouteModule extends RouteAdaptor {
     final opts = Options(action: action, params: params, express: express);
 
     final route = buildRoute(
+      context,
       opts,
-      context: context,
       transition: transition,
       transitionBuilder: transitionBuilder,
       duration: duration,
@@ -203,8 +203,8 @@ abstract class RouteModule extends RouteAdaptor {
   }
 
   Route buildRoute(
+    BuildContext context,
     Options opts, {
-    BuildContext? context,
     TransitionType transition = TransitionType.native,
     RouteTransitionsBuilder? transitionBuilder,
     Duration duration = const Duration(milliseconds: 250),
@@ -252,6 +252,9 @@ abstract class RouteModule extends RouteAdaptor {
     if (next == null) {
       next = notFoundNextPage(context, opts);
     }
+    if (next == null && Mediator.notFound != null) {
+      next = Mediator.notFound!(context, opts);
+    }
     return next;
   }
 
@@ -291,17 +294,18 @@ mixin TurnAdaptorObserverMixin {
   void willTransitionRoute(BuildContext context, Options options);
 }
 
-class TurnAdaptorObserver  {
+class TurnAdaptorObserver {
   TurnAdaptorObserver._();
 
   static TurnAdaptorObserver get instance {
     _instance ??= TurnAdaptorObserver._();
     return _instance!;
   }
+
   static TurnAdaptorObserver? _instance;
 
   final List<TurnAdaptorObserverMixin> _observers =
-  <TurnAdaptorObserverMixin>[];
+      <TurnAdaptorObserverMixin>[];
 
   void registerObserver<T extends TurnAdaptorObserverMixin>(T delegate) {
     if (_observers.contains(delegate)) return;
