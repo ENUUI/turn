@@ -37,7 +37,7 @@ class Options {
       return;
     }
     String actionPath = action;
-    Map<String, dynamic>? _params;
+    Map<String, dynamic>? _params = params != null ? Map.of(params) : null;
     if (actionPath.contains('?')) {
       final splits = actionPath.split('?');
       actionPath = splits[0];
@@ -48,17 +48,11 @@ class Options {
       }
     }
 
-    if (params != null && params.isNotEmpty) {
-      if (_params != null)
-        _params.addAll(params);
-      else
-        _params = params;
-    }
-
-    if (_params != null && _params.isNotEmpty) {
+    if (_params != null) {
       express?.extraQuery = _params;
       this._params = _params;
     }
+
     if (actionPath.isEmpty) return;
 
     _path = actionPath;
