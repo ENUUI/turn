@@ -26,6 +26,7 @@ class Turn {
     BuildContext context,
     String action, {
     Map<String, dynamic>? params,
+    String? package,
     Express? express,
     bool replace = false,
     bool clearStack = false,
@@ -39,6 +40,7 @@ class Turn {
       context,
       action,
       params: params,
+      package: package,
       express: express,
       replace: replace,
       clearStack: clearStack,
