@@ -67,18 +67,21 @@ class Turn {
       params: params,
       express: express,
     );
-    return MaterialPageRoute(builder: (context) {
-      final page = Mediator.perform<Widget>(context, opts);
-      if (page != null) return page;
-      final page404 = Mediator.notFound?.call(context, opts);
-      if (page404 != null && page404 is Widget) return page404;
-      assert(() {
-        throw throw FlutterError.fromParts(<DiagnosticsNode>[
-          ErrorSummary('Page Not Found!'),
-          ErrorDescription('${opts.toString()}')
-        ]);
-      }());
-      return const Scaffold();
-    });
+    return MaterialPageRoute(
+      settings: RouteSettings(name: opts.path),
+      builder: (context) {
+        final page = Mediator.perform<Widget>(context, opts);
+        if (page != null) return page;
+        final page404 = Mediator.notFound?.call(context, opts);
+        if (page404 != null && page404 is Widget) return page404;
+        assert(() {
+          throw throw FlutterError.fromParts(<DiagnosticsNode>[
+            ErrorSummary('Page Not Found!'),
+            ErrorDescription('${opts.toString()}')
+          ]);
+        }());
+        return const Scaffold();
+      },
+    );
   }
 }
