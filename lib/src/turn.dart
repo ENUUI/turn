@@ -23,6 +23,18 @@ typedef TurnRouteBuilder = Route Function(
   Widget? Function(BuildContext context) nextPageBuilder,
 );
 
+typedef TurnToRouteBuilder = Future Function(
+  BuildContext context,
+  Options options, {
+  TransitionType transition,
+  RouteTransitionsBuilder? transitionBuilder,
+  Duration duration,
+  TurnRouteBuilder? turnRouteBuilder,
+  bool innerPackage,
+  bool replace,
+  bool clearStack,
+});
+
 abstract class Target {
   dynamic task(String action, Map<String, dynamic>? params) {}
 
@@ -96,6 +108,28 @@ abstract class RouteAdaptor extends Adaptor {
       innerPackage: innerPackage,
     );
   }
+
+  /// 如果返回null，正常[Turn.to()]
+  /// 否则
+  ///   [Turn.to)]将会被拦截
+  ///   以下方法都不会被调用
+  ///     [notFoundNextPage]
+  ///     [willTransitionRoute]
+  ///     [shouldTransitionRoute]
+  ///     [shouldTransitionRoute]
+  Future? willTurnTo(
+    BuildContext context,
+    Options options, {
+    TransitionType transition = TransitionType.native,
+    RouteTransitionsBuilder? transitionBuilder,
+    Duration duration = const Duration(milliseconds: 250),
+    TurnRouteBuilder? turnRouteBuilder,
+    bool innerPackage = false,
+    bool replace = false,
+    bool clearStack = false,
+  }) {
+    return null;
+  }
 }
 
 abstract class RouteModule extends RouteAdaptor {
@@ -168,6 +202,20 @@ abstract class RouteModule extends RouteAdaptor {
     bool innerPackage = false,
   }) async {
     final opts = Options(action: action, params: params, express: express);
+
+    final Future? anyFuture = willTurnTo(
+      context,
+      opts,
+      transition: transition,
+      transitionBuilder: transitionBuilder,
+      duration: duration,
+      turnRouteBuilder: turnRouteBuilder,
+      innerPackage: innerPackage,
+      replace: replace,
+      clearStack: clearStack,
+    );
+
+    if (anyFuture != null) return anyFuture;
 
     final route = buildRoute(
       context,
