@@ -75,7 +75,7 @@ class Turn {
         final page404 = Mediator.notFound?.call(context, opts);
         if (page404 != null && page404 is Widget) return page404;
         assert(() {
-          throw throw FlutterError.fromParts(<DiagnosticsNode>[
+          throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary('Page Not Found!'),
             ErrorDescription('${opts.toString()}')
           ]);
