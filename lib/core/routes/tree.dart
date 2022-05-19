@@ -135,7 +135,7 @@ class RouteTree {
       if (checkComponent.contains('?')) {
         final splitParam = checkComponent.split("?");
         pathPart = splitParam[0];
-        queryMap = parseQueryString(splitParam[1]);
+        queryMap = _parseQueryString(splitParam[1]);
       }
 
       for (final node in nodesToCheck) {
@@ -214,7 +214,7 @@ class RouteTree {
     return component.startsWith(":");
   }
 
-  Map<String, List<String>> parseQueryString(String query) {
+  Map<String, List<String>> _parseQueryString(String query) {
     final search = RegExp('([^&=]+)=?([^&]*)');
     final params = Map<String, List<String>>();
 

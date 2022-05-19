@@ -3,6 +3,9 @@ import 'package:turn/src/express.dart';
 import 'package:turn/src/opts.dart';
 import 'package:turn/src/turn.dart';
 
+typedef NextPageBuilder = Widget Function(
+    BuildContext context, Options options);
+
 abstract class TurnAbility {
   Future to(
     BuildContext context,

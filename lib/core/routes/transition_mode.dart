@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const Duration kTransitionDuration = Duration(milliseconds: 300);
+const Duration kTransitionDuration = Duration(milliseconds: 250);
 
 abstract class TransitionMode {
   static const TransitionMode native = _Native();
