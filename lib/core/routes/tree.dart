@@ -21,11 +21,13 @@ class TurnRoute {
     this.builder, {
     this.transitionMode,
     this.queryTypeMap,
+    this.package,
   });
 
   final String route;
   final NextPageBuilder builder;
   final TransitionMode? transitionMode;
+  final String? package;
 
   /// e.g.
   ///   *  xxx/:id/xxx?name=Mark&age=49
@@ -37,6 +39,16 @@ class TurnRoute {
   /// 如果 queryTypeMap 不为空，将类型进行类型转化。不在 queryTypeMap 中的参数默认为字符串。
   /// 如果key对应数组，则会尝试将数组中的每一个元素进行类型转化
   final Map<String, QueryType>? queryTypeMap;
+
+  TurnRoute copy({String? package}) {
+    return TurnRoute(
+      route,
+      builder,
+      transitionMode: transitionMode,
+      queryTypeMap: queryTypeMap,
+      package: package ?? package,
+    );
+  }
 }
 
 class MatchResult {
@@ -109,8 +121,16 @@ class RouteTree {
     }
   }
 
-  MatchResult? matchRoute(String route) {
-    return matchPath(RoutePath.fromPath(route));
+  MatchResult? matchRoute(
+    String route, {
+    String? package,
+    bool innerPackage = false,
+  }) {
+    return matchPath(RoutePath.fromPath(
+      route,
+      package: package,
+      innerPackage: innerPackage,
+    ));
   }
 
   MatchResult? matchPath(RoutePath path) {
@@ -145,24 +165,36 @@ class RouteTree {
 
     final matches = nodeMatches.values.toList();
 
-    if (matches.isNotEmpty) {
-      final match = matches.first;
-      final nodeToUse = match.node;
-      final routes = nodeToUse.routes;
+    if (matches.isEmpty) return null;
 
-      if (routes.isNotEmpty) {
-        final useRoute = routes[0];
-        final params = path.params;
-        params.addAll(match.params);
-        final routeMatch = MatchResult(
-          useRoute,
-          params: _castMap(params, useRoute.queryTypeMap),
-        );
-        return routeMatch;
-      }
+    final match = matches.first;
+    final nodeToUse = match.node;
+    final routes = nodeToUse.routes;
+
+    if (routes.isEmpty) return null;
+
+    final package = path.package;
+    final innerPackage = path.innerPackage;
+    final params = path.params;
+    params.addAll(match.params);
+
+    List<TurnRoute> matchRoutes = <TurnRoute>[];
+    if (package != null && package.isNotEmpty) {
+      matchRoutes = routes.where((e) => e.package == package).toList();
+      if (matchRoutes.isEmpty && innerPackage) return null;
     }
 
-    return null;
+    if (matchRoutes.isEmpty) {
+      matchRoutes = routes;
+    }
+
+    final useRoute = matchRoutes[0];
+
+    final routeMatch = MatchResult(
+      useRoute,
+      params: _castMap(params, useRoute.queryTypeMap),
+    );
+    return routeMatch;
   }
 
   TreeNode? _nodeForComponent(String component, TreeNode? parent) {
@@ -267,9 +299,16 @@ class TreeNodeMatch {
 }
 
 class RoutePath {
-  RoutePath._(this.path, this.components, this.params);
+  RoutePath._(
+    this.path,
+    this.components,
+    this.params, {
+    this.package,
+    this.innerPackage = false,
+  });
 
-  factory RoutePath.fromPath(String path) {
+  factory RoutePath.fromPath(String path,
+      {String? package, bool innerPackage = false}) {
     String usePath = path;
 
     if (usePath.startsWith('/')) {
@@ -293,12 +332,20 @@ class RoutePath {
       }
     }
 
-    return RoutePath._(path, parts, params);
+    return RoutePath._(
+      path,
+      parts,
+      params,
+      package: package,
+      innerPackage: innerPackage,
+    );
   }
 
   final String path;
   final List<String> components;
   final Map<String, List<String>> params;
+  final String? package;
+  final bool innerPackage;
 }
 
 Map<String, List<String>> _parseQueryString(String query) {
