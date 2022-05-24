@@ -1,59 +1,31 @@
-import 'package:flutter/material.dart'
-    show FlutterError, DiagnosticsNode, ErrorSummary;
-import 'package:turn/core/routes/tree.dart';
-import 'module.dart';
+import '../routes/tree.dart';
+import 'matchable.dart';
 
-abstract class Project {
-  final Map<Object, Module> _modulesMap = <Object, Module>{};
+abstract class Project extends Matchable {
+  final RouteTree _routeTree = RouteTree();
 
-  Iterable<Module> get modules => _modulesMap.values;
-
-  void registerModule(Object package, Module module) {
-    assert(() {
-      if (_modulesMap.containsKey(package)) {
-        throw FlutterError.fromParts(<DiagnosticsNode>[
-          ErrorSummary('Package($package) has been added.'),
-        ]);
-      }
-      return true;
-    }());
-    if (_modulesMap.containsKey(package)) {
-      return;
+  @override
+  void registerRoute(TurnRoute route, {String? package}) {
+    if (package != null && package.isNotEmpty) {
+      route = route.copy(package: package);
     }
-    _modulesMap[package] = module;
+    _routeTree.addRoute(route);
   }
 
-  Module? getModule(Object package) => _modulesMap[package];
-
+  @override
   MatchResult? matchRoute(
     String route, {
-    Object? package,
-    bool innerPackage = false,
-  }) {
-    final routePath = RoutePath.fromPath(route);
-    Module? module;
-    if (package != null) {
-      module = getModule(package);
-      if (module != null) {
-        final result = module.matchPath(routePath);
-        if (result != null || innerPackage) {
-          return result;
-        }
-      }
-    }
-    return matchRoutePath(routePath, excludeModule: module);
-  }
+    String? package,
+    bool fallthrough = true,
+  }) =>
+      matchPath(RoutePath.fromPath(
+        route,
+        package: package,
+        fallthrough: fallthrough,
+      ));
 
-  MatchResult? matchRoutePath(RoutePath routePath, {Module? excludeModule}) {
-    for (final m in modules) {
-      if (m == excludeModule) continue;
-
-      final result = m.matchPath(routePath);
-
-      if (result != null) {
-        break;
-      }
-    }
-    return null;
+  @override
+  MatchResult? matchPath(RoutePath path) {
+    return _routeTree.matchPath(path);
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:turn/core/interfaces/turn_ability.dart';
-
+import 'argument.dart';
 import 'transition_mode.dart';
+
+typedef NextPageBuilder = Widget Function(
+  BuildContext context,
+  Arguments options,
+);
 
 enum QueryType {
   integer,
@@ -46,7 +50,7 @@ class TurnRoute {
       builder,
       transitionMode: transitionMode,
       queryTypeMap: queryTypeMap,
-      package: package ?? package,
+      package: package ?? this.package,
     );
   }
 }
@@ -124,12 +128,12 @@ class RouteTree {
   MatchResult? matchRoute(
     String route, {
     String? package,
-    bool innerPackage = false,
+    bool fallthrough = true,
   }) {
     return matchPath(RoutePath.fromPath(
       route,
       package: package,
-      innerPackage: innerPackage,
+      fallthrough: fallthrough,
     ));
   }
 
@@ -174,14 +178,14 @@ class RouteTree {
     if (routes.isEmpty) return null;
 
     final package = path.package;
-    final innerPackage = path.innerPackage;
+    final fallthrough = path.fallthrough;
     final params = path.params;
     params.addAll(match.params);
 
     List<TurnRoute> matchRoutes = <TurnRoute>[];
     if (package != null && package.isNotEmpty) {
       matchRoutes = routes.where((e) => e.package == package).toList();
-      if (matchRoutes.isEmpty && innerPackage) return null;
+      if (matchRoutes.isEmpty && !fallthrough) return null;
     }
 
     if (matchRoutes.isEmpty) {
@@ -304,11 +308,11 @@ class RoutePath {
     this.components,
     this.params, {
     this.package,
-    this.innerPackage = false,
+    this.fallthrough = true,
   });
 
   factory RoutePath.fromPath(String path,
-      {String? package, bool innerPackage = false}) {
+      {String? package, bool fallthrough = true}) {
     String usePath = path;
 
     if (usePath.startsWith('/')) {
@@ -337,7 +341,7 @@ class RoutePath {
       parts,
       params,
       package: package,
-      innerPackage: innerPackage,
+      fallthrough: fallthrough,
     );
   }
 
@@ -345,7 +349,7 @@ class RoutePath {
   final List<String> components;
   final Map<String, List<String>> params;
   final String? package;
-  final bool innerPackage;
+  final bool fallthrough;
 }
 
 Map<String, List<String>> _parseQueryString(String query) {
