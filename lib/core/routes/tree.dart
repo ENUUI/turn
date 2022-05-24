@@ -109,35 +109,18 @@ class RouteTree {
     }
   }
 
-  MatchResult? matchRoute(String path) {
-    String usePath = path;
+  MatchResult? matchRoute(String route) {
+    return matchPath(RoutePath.fromPath(route));
+  }
 
-    if (usePath.startsWith('/')) {
-      usePath = path.substring(1);
-    }
-
-    final List<String> components;
-    if (path == Navigator.defaultRouteName) {
-      components = ['/'];
-    } else {
-      components = usePath.split('/');
-    }
-
+  MatchResult? matchPath(RoutePath path) {
     Map<TreeNode, TreeNodeMatch> nodeMatches = <TreeNode, TreeNodeMatch>{};
     List<TreeNode> nodesToCheck = _nodes;
 
-    for (final checkComponent in components) {
+    for (final checkComponent in path.components) {
       final currentMatches = <TreeNode, TreeNodeMatch>{};
       final nextNodes = <TreeNode>[];
-
       String pathPart = checkComponent;
-      Map<String, List<String>>? queryMap;
-      if (checkComponent.contains('?')) {
-        final splitParam = checkComponent.split("?");
-        pathPart = splitParam[0];
-        queryMap = _parseQueryString(splitParam[1]);
-      }
-
       for (final node in nodesToCheck) {
         final isMatch = (node.part == pathPart || node.isParameter);
         if (isMatch) {
@@ -146,9 +129,6 @@ class RouteTree {
           if (node.isParameter) {
             final paramKey = node.part.substring(1);
             match.setParam(paramKey, pathPart);
-          }
-          if (queryMap != null) {
-            match.params.addAll(queryMap);
           }
           currentMatches[node] = match;
           nextNodes.addAll(node.nodes);
@@ -172,9 +152,11 @@ class RouteTree {
 
       if (routes.isNotEmpty) {
         final useRoute = routes[0];
+        final params = path.params;
+        params.addAll(match.params);
         final routeMatch = MatchResult(
           useRoute,
-          params: _castMap(match.params, useRoute.queryTypeMap),
+          params: _castMap(params, useRoute.queryTypeMap),
         );
         return routeMatch;
       }
@@ -212,28 +194,6 @@ class RouteTree {
 
   bool _isParameterComponent(String component) {
     return component.startsWith(":");
-  }
-
-  Map<String, List<String>> _parseQueryString(String query) {
-    final search = RegExp('([^&=]+)=?([^&]*)');
-    final params = Map<String, List<String>>();
-
-    if (query.startsWith('?')) query = query.substring(1);
-
-    decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
-
-    for (Match match in search.allMatches(query)) {
-      final key = decode(match.group(1)!);
-      final value = decode(match.group(2)!);
-
-      if (params.containsKey(key)) {
-        params[key]!.add(value);
-      } else {
-        params[key] = [value];
-      }
-    }
-
-    return params;
   }
 
   Map<String, Object> _castMap(
@@ -304,4 +264,61 @@ class TreeNodeMatch {
       params[key] = [value];
     }
   }
+}
+
+class RoutePath {
+  RoutePath._(this.path, this.components, this.params);
+
+  factory RoutePath.fromPath(String path) {
+    String usePath = path;
+
+    if (usePath.startsWith('/')) {
+      usePath = path.substring(1);
+    }
+
+    final List<String> components;
+    if (path == Navigator.defaultRouteName) {
+      components = ['/'];
+    } else {
+      components = usePath.split('/');
+    }
+
+    final parts = <String>[];
+    final params = <String, List<String>>{};
+    for (final part in components) {
+      if (path.contains('?')) {
+        final splitParts = part.split('?');
+        parts.add(splitParts[0]);
+        params.addAll(_parseQueryString(splitParts[1]));
+      }
+    }
+
+    return RoutePath._(path, parts, params);
+  }
+
+  final String path;
+  final List<String> components;
+  final Map<String, List<String>> params;
+}
+
+Map<String, List<String>> _parseQueryString(String query) {
+  final search = RegExp('([^&=]+)=?([^&]*)');
+  final params = Map<String, List<String>>();
+
+  if (query.startsWith('?')) query = query.substring(1);
+
+  decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
+
+  for (Match match in search.allMatches(query)) {
+    final key = decode(match.group(1)!);
+    final value = decode(match.group(2)!);
+
+    if (params.containsKey(key)) {
+      params[key]!.add(value);
+    } else {
+      params[key] = [value];
+    }
+  }
+
+  return params;
 }

@@ -5,13 +5,16 @@ class Options {
   Options({
     required this.action,
     Map<String, dynamic>? params,
-    Express? express,
-  }) : express = express {
+    this.express,
+    this.data,
+  }) {
     _setOpts(params);
   }
 
+  @Deprecated('过时，使用data代替')
   final Express? express;
   final String action;
+  final Object? data;
 
   Map<String, dynamic>? get params => _params;
   Map<String, dynamic>? _params;

@@ -1,13 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:turn/src/express.dart';
-import 'package:turn/src/opts.dart';
-import 'package:turn/src/turn.dart';
-
-import '../impl/navigator_to.dart';
+import 'package:flutter/material.dart'
+    show FlutterError, DiagnosticsNode, ErrorSummary;
+import 'package:turn/core/routes/tree.dart';
 import 'module.dart';
-import 'turn_ability.dart';
 
-abstract class Project extends TurnAbility {
+abstract class Project {
   final Map<Object, Module> _modulesMap = <Object, Module>{};
 
   Iterable<Module> get modules => _modulesMap.values;
@@ -29,67 +25,35 @@ abstract class Project extends TurnAbility {
 
   Module? getModule(Object package) => _modulesMap[package];
 
-  void forEach(bool Function(Object package, Module module) action,
-      [Module? excludeModule, Object? excludePackage]) {
-    for (final package in _modulesMap.keys) {
-      final module = _modulesMap[package];
-      if (package == excludePackage || module == excludeModule) {
-        continue;
+  MatchResult? matchRoute(
+    String route, {
+    Object? package,
+    bool innerPackage = false,
+  }) {
+    final routePath = RoutePath.fromPath(route);
+    Module? module;
+    if (package != null) {
+      module = getModule(package);
+      if (module != null) {
+        final result = module.matchPath(routePath);
+        if (result != null || innerPackage) {
+          return result;
+        }
       }
-      if (action(package, module!)) {
+    }
+    return matchRoutePath(routePath, excludeModule: module);
+  }
+
+  MatchResult? matchRoutePath(RoutePath routePath, {Module? excludeModule}) {
+    for (final m in modules) {
+      if (m == excludeModule) continue;
+
+      final result = m.matchPath(routePath);
+
+      if (result != null) {
         break;
       }
     }
-  }
-
-  @override
-  Future to(
-    BuildContext context,
-    String action, {
-    Map<String, dynamic>? params,
-    Object? package,
-    Express? express,
-    bool replace = false,
-    bool clearStack = false,
-    TransitionType transition = TransitionType.native,
-    RouteTransitionsBuilder? transitionBuilder,
-    Duration duration = const Duration(milliseconds: 250),
-    TurnRouteBuilder? turnRouteBuilder,
-    RoutePredicate? predicate,
-    bool innerPackage = false, // 当指定 package 时有效
-  }) {
-    final options = Options(
-      action: action,
-      params: params,
-      express: express,
-    );
-
-    Module? module;
-    NextPageBuilder? builder;
-    if (package != null) {
-      module = getModule(package);
-      assert(() {
-        if (module == null) {
-          throw FlutterError('None module matched package($package)!');
-        }
-        return true;
-      } ());
-      // builder = module?.fetch(options);
-      if (builder == null && !innerPackage) {
-
-      }
-    }
-    return NavigatorTo.to(
-      context,
-      RouteSettings(name: options.path),
-      (context) => Container(),
-      replace: replace,
-      clearStack: clearStack,
-      transition: transition,
-      transitionBuilder: transitionBuilder,
-      duration: duration,
-      turnRouteBuilder: turnRouteBuilder,
-      predicate: predicate,
-    );
+    return null;
   }
 }
