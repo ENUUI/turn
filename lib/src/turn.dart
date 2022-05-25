@@ -18,9 +18,9 @@ enum TransitionType {
 typedef TurnPageBuilder = Widget? Function(
     BuildContext context, Options options);
 
-typedef TurnRouteBuilder = Route Function(
+typedef TurnRouteBuilder = Route<T> Function<T extends Object?>(
   BuildContext? context,
-  Widget? Function(BuildContext context) nextPageBuilder,
+  WidgetBuilder nextPageBuilder,
 );
 
 typedef TurnToRouteBuilder = Future Function(
@@ -273,7 +273,8 @@ abstract class RouteModule extends RouteAdaptor {
     } else if (transition == TransitionType.customRoute) {
       return turnRouteBuilder!(
         context,
-        (context) => _nextPage(context, opts, innerPackage),
+        // todo: 版本兼容
+        (context) => _nextPage(context, opts, innerPackage)!,
       );
     } else {
       var transitionsBuilder;

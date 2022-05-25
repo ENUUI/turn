@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:turn/src/express.dart';
 
+@Deprecated('已过时')
 class Options {
   Options({
     required this.action,

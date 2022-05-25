@@ -15,7 +15,7 @@ abstract class Matchable {
 
   MatchResult? matchPath(RoutePath path);
 
-  Future<T?> to<T extends Object?>(
+  Future<T?> push<T extends Object?>(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -32,7 +32,7 @@ abstract class Matchable {
         mode: transitionMode,
       );
 
-  Future<T?> toUntil<T extends Object?>(
+  Future<T?> pushUntil<T extends Object?>(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -125,7 +125,7 @@ abstract class Matchable {
       return Future.error(FlutterError('Refused by [shouldTransitionRoute]'));
     }
 
-    final route = _createRoute<T>(useRoute, arguments, mode);
+    final route = createRoute<T>(useRoute, arguments, mode);
 
     T? pushResult;
 
@@ -145,7 +145,7 @@ abstract class Matchable {
     return turnCompleted(pushResult, useRoute, arguments);
   }
 
-  Route<T> _createRoute<T extends Object?>(
+  Route<T> createRoute<T extends Object?>(
     TurnRoute turnRoute,
     Arguments arguments,
     TransitionMode? mode,
@@ -204,4 +204,27 @@ abstract class Matchable {
   ) {
     return Future.value(result);
   }
+
+  /// Pop
+  void pop<T extends Object>(BuildContext context, [T? result]) =>
+      Navigator.pop<T>(context, result);
+
+  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
+      Navigator.maybePop<T>(context, result);
+
+  void popUntil(BuildContext context, String routePath, {String? package}) {
+    final matchResult = matchRoute(routePath);
+    if (matchResult == null) {
+      assert(() {
+        throw FlutterError('RoutePath($routePath) is invalid!');
+      }());
+      return;
+    }
+    Navigator.popUntil(
+      context,
+      ModalRoute.withName(matchResult.route.route),
+    );
+  }
+
+  bool canPop(BuildContext context) => Navigator.canPop(context);
 }
