@@ -156,7 +156,7 @@ class RouteTree {
     for (final checkComponent in path.components) {
       final currentMatches = <TreeNode, TreeNodeMatch>{};
       final nextNodes = <TreeNode>[];
-      String pathPart = checkComponent;
+      final pathPart = checkComponent;
       for (final node in nodesToCheck) {
         final isMatch = (node.part == pathPart || node.isParameter);
         if (isMatch) {
@@ -345,6 +345,8 @@ class RoutePath {
         final splitParts = part.split('?');
         parts.add(splitParts[0]);
         params.addAll(_parseQueryString(splitParts[1]));
+      } else {
+        parts.add(part);
       }
     }
 
