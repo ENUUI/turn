@@ -10,7 +10,9 @@ export 'src/turn.dart';
 export 'core/interfaces/matchable.dart';
 export 'core/interfaces/module.dart';
 export 'core/interfaces/project.dart';
+export 'core/interfaces/target.dart';
 
 export 'core/routes/argument.dart';
 export 'core/routes/transition_mode.dart';
 export 'core/routes/tree.dart';
+export 'core/routes/navigator_to.dart';

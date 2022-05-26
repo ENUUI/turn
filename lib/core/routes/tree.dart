@@ -74,6 +74,18 @@ class TreeNode {
 
   final routes = <TurnRoute>[];
   final nodes = <TreeNode>[];
+
+  @override
+  String toString() {
+    return '''
+    TreeNode(
+      part: $part,
+      type: $type,
+      routes: $routes,
+      nodes: $nodes,
+    )
+    ''';
+  }
 }
 
 class RouteTree {

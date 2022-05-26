@@ -25,16 +25,12 @@ abstract class Project extends Matchable {
     String route, {
     String? package,
     bool fallthrough = true,
-  }) =>
-      matchPath(RoutePath.fromPath(
-        route,
-        package: package,
-        fallthrough: fallthrough,
-      ));
-
-  @override
-  MatchResult? matchPath(RoutePath path) {
-    return _routeTree.matchPath(path);
+  }) {
+    return _routeTree.matchPath(RoutePath.fromPath(
+      route,
+      package: package,
+      fallthrough: fallthrough,
+    ));
   }
 
   Route<dynamic> generator(RouteSettings routeSettings) {
@@ -65,7 +61,7 @@ abstract class Project extends Matchable {
       data: arguments,
       params: matchResult.params,
     );
-    return createRoute(
+    return navigatorTo.createRoute(
       useRoute,
       args,
       useRoute.transitionMode ?? TransitionMode.native,

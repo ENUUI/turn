@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:turn/src/express.dart';
 import 'package:turn/src/turn.dart';
+import '../core/routes/navigator_to.dart';
 import '../core/interfaces/project.dart';
 import '../core/routes/transition_mode.dart';
 import '../core/extensions/transition_type.dart';
@@ -14,6 +15,8 @@ class Turn {
     return _project!;
   }
 
+  static NavigatorTo get navigatorTo => project.navigatorTo;
+
   static Project? _project;
 
   static void setProject(Project project) {
@@ -21,35 +24,35 @@ class Turn {
   }
 
   static void pop<T extends Object>(BuildContext context, [T? result]) =>
-      project.pop<T>(context, result);
+      navigatorTo.pop<T>(context, result);
 
   static Future<bool> maybePop<T extends Object>(BuildContext context,
           [T? result]) =>
-      project.maybePop<T>(context, result);
+      navigatorTo.maybePop<T>(context, result);
 
   static void popUntil(BuildContext context, String action) =>
-      project.popUntil(context, action);
+      navigatorTo.popUntil(context, action);
 
-  static bool canPop(BuildContext context) => project.canPop(context);
+  static bool canPop(BuildContext context) => navigatorTo.canPop(context);
 
   static Future to(
     BuildContext context,
     String action, {
     String? package,
-    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
-    @Deprecated('Use [data] instead') Express? express,
     Object? data,
     bool replace = false,
     bool clearStack = false,
-    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
     TransitionMode? transitionMode,
+    RoutePredicate? predicate, // clearStack = true
+    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
+    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
+    @Deprecated('Use [data] instead') Express? express,
     @Deprecated('Use [TransitionMode] instead')
         RouteTransitionsBuilder? transitionBuilder,
     @Deprecated('Use [TransitionMode] instead')
         Duration duration = const Duration(milliseconds: 250),
     @Deprecated('Use [TransitionMode] instead')
         TurnRouteBuilder? turnRouteBuilder,
-    RoutePredicate? predicate, // clearStack = true
   }) async {
     TransitionMode mode = transitionMode ??
         transition?.convertTo(
@@ -59,7 +62,7 @@ class Turn {
         ) ??
         TransitionMode.native;
     if (replace) {
-      return project.replace(
+      return navigatorTo.replace(
         context,
         action,
         data: data ?? params ?? express,
@@ -68,7 +71,7 @@ class Turn {
         transitionMode: mode,
       );
     } else if (clearStack) {
-      return project.pushUntil(
+      return navigatorTo.pushUntil(
         context,
         action,
         data: data ?? params ?? express,
@@ -78,7 +81,7 @@ class Turn {
         routePredicate: predicate,
       );
     } else {
-      return project.push(
+      return navigatorTo.push(
         context,
         action,
         data: data ?? params ?? express,
