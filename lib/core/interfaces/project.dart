@@ -6,7 +6,11 @@ import '../routes/tree.dart';
 import 'matchable.dart';
 
 abstract class Project extends Matchable {
+  Project();
+
   final RouteTree _routeTree = RouteTree();
+
+  factory Project.base() => _BaseProject();
 
   @override
   void registerRoute(TurnRoute route, {String? package}) {
@@ -39,17 +43,17 @@ abstract class Project extends Matchable {
     final matchResult = matchRoute(name);
 
     if (matchResult == null) {
-      assert(() {
-        throw FlutterError.fromParts(<DiagnosticsNode>[
-          ErrorSummary('Page Not Found!'),
-          ErrorDescription('routePath: $name, arguments: $arguments')
-        ]);
-      }());
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (BuildContext context) {
           final page404Builder = notFoundPage(context, '', arguments);
           if (page404Builder != null) return page404Builder(context);
+          assert(() {
+            throw FlutterError.fromParts(<DiagnosticsNode>[
+              ErrorSummary('Page Not Found!'),
+              ErrorDescription('routePath: $name, arguments: $arguments')
+            ]);
+          }());
           return const Scaffold();
         },
       );
@@ -68,3 +72,5 @@ abstract class Project extends Matchable {
     );
   }
 }
+
+class _BaseProject extends Project {}
