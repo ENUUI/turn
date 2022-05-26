@@ -1,3 +1,4 @@
+@Deprecated('')
 abstract class Express {
   /// Do not set any data to [extraQuery]
   /// [extraQuery] will be covered when parsing [params] and [action]

@@ -4,6 +4,7 @@ import 'mediator.dart';
 import 'express.dart';
 import 'opts.dart';
 
+@Deprecated('Use [TransitionMode] instead')
 enum TransitionType {
   native,
   nativeModal,

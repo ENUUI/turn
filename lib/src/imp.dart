@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:turn/core/routes/argument.dart';
 import 'package:turn/src/express.dart';
 import 'package:turn/src/turn.dart';
 import '../core/interfaces/project.dart';
@@ -35,27 +34,34 @@ class Turn {
   static Future to(
     BuildContext context,
     String action, {
-    Map<String, dynamic>? params,
     String? package,
-    Express? express,
+    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
+    @Deprecated('Use [data] instead') Express? express,
+    Object? data,
     bool replace = false,
     bool clearStack = false,
-    TransitionType transition = TransitionType.native,
-    RouteTransitionsBuilder? transitionBuilder,
-    Duration duration = const Duration(milliseconds: 250),
-    TurnRouteBuilder? turnRouteBuilder,
+    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
+    TransitionMode? transitionMode,
+    @Deprecated('Use [TransitionMode] instead')
+        RouteTransitionsBuilder? transitionBuilder,
+    @Deprecated('Use [TransitionMode] instead')
+        Duration duration = const Duration(milliseconds: 250),
+    @Deprecated('Use [TransitionMode] instead')
+        TurnRouteBuilder? turnRouteBuilder,
     RoutePredicate? predicate, // clearStack = true
   }) async {
-    TransitionMode mode = transition.convertTo(
-      transitionsBuilder: transitionBuilder,
-      context: context,
-      routeBuilder: turnRouteBuilder,
-    );
+    TransitionMode mode = transitionMode ??
+        transition?.convertTo(
+          transitionsBuilder: transitionBuilder,
+          context: context,
+          routeBuilder: turnRouteBuilder,
+        ) ??
+        TransitionMode.native;
     if (replace) {
       return project.replace(
         context,
         action,
-        data: params,
+        data: data ?? params ?? express,
         package: package,
         fallthrough: true,
         transitionMode: mode,
@@ -64,7 +70,7 @@ class Turn {
       return project.pushUntil(
         context,
         action,
-        data: params,
+        data: data ?? params ?? express,
         package: package,
         fallthrough: true,
         transitionMode: mode,
@@ -74,7 +80,7 @@ class Turn {
       return project.push(
         context,
         action,
-        data: params,
+        data: data ?? params ?? express,
         package: package,
         fallthrough: true,
         transitionMode: mode,
@@ -83,38 +89,7 @@ class Turn {
   }
 
   static Route<dynamic> generator(RouteSettings routeSettings) {
-    final arguments = routeSettings.arguments;
-    final name = routeSettings.name ?? '';
-    final matchResult = project.matchRoute(name);
-
-    if (matchResult == null) {
-      assert(() {
-        throw FlutterError.fromParts(<DiagnosticsNode>[
-          ErrorSummary('Page Not Found!'),
-          ErrorDescription('routePath: $name, arguments: $arguments')
-        ]);
-      }());
-      return MaterialPageRoute(
-        settings: routeSettings,
-        builder: (BuildContext context) {
-          final page404Builder = project.notFoundPage(context, '', arguments);
-          if (page404Builder != null) return page404Builder(context);
-          return const Scaffold();
-        },
-      );
-    }
-
-    final useRoute = matchResult.route;
-    final args = Arguments(
-      useRoute.route,
-      data: arguments,
-      params: matchResult.params,
-    );
-    return project.createRoute(
-      useRoute,
-      args,
-      useRoute.transitionMode ?? TransitionMode.native,
-    );
+    return project.generator(routeSettings);
   }
 }
 
