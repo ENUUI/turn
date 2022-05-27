@@ -77,14 +77,7 @@ class TreeNode {
 
   @override
   String toString() {
-    return '''
-    TreeNode(
-      part: $part,
-      type: $type,
-      routes: $routes,
-      nodes: $nodes,
-    )
-    ''';
+    return 'TreeNode(part: $part, type: $type, routes: $routes, nodes: $nodes)';
   }
 }
 
@@ -134,6 +127,7 @@ class RouteTree {
       if (i == components.length - 1) {
         node.routes.add(route);
       }
+      parent = node;
     }
   }
 
