@@ -3,7 +3,7 @@ library turn;
 export 'src/navigator_ob.dart';
 export 'src/imp.dart';
 
-export 'core/interfaces/matchable.dart';
+export 'core/interfaces/navigateable.dart';
 export 'core/interfaces/target.dart';
 
 export 'core/routes/argument.dart';

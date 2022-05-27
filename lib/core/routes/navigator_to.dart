@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'argument.dart';
 import 'transition_mode.dart';
 import 'tree.dart';
-import '../interfaces/matchable.dart';
+import '../interfaces/navigateable.dart';
 
 class NavigatorTo {
   NavigatorTo(this.project);

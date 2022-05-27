@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:turn/src/turn_deprecated.dart';
-import '../core/interfaces/matchable.dart';
+import '../core/interfaces/navigateable.dart';
 import '../core/routes/navigator_to.dart';
 import '../core/routes/transition_mode.dart';
 
