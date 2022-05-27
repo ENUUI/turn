@@ -196,20 +196,13 @@ abstract class Project extends Navigateable {
     );
   }
 
-  @override
-  WidgetBuilder? notFoundPage(
-    BuildContext context,
-    String routePath,
-    Object? data,
-  ) =>
-      null;
-
   /// 在路由地址被找到后立即调用
   /// 如果返回null，正常[Turn.to()]
   /// 否则
   ///   [to] / [replace] / [toUntil] 将会被拦截
   /// 且以下方法都不会被调用
   ///   [willTransitionPage] / [shouldTransitionRoute]
+  /// 如果有对应的package，则会先尝试子module去执行
   @override
   Future<T?>? willTurnTo<T extends Object?, TO extends Object?>(
     BuildContext context,
@@ -220,8 +213,22 @@ abstract class Project extends Navigateable {
     bool isReplace = false,
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
-  }) =>
-      null;
+  }) {
+    final package = turnRoute.package;
+    if (package != null && package.isNotEmpty) {
+      return _modulesMap[package]?.willTurnTo(
+        context,
+        turnRoute,
+        arguments,
+        mode: mode,
+        result: result,
+        isReplace: isReplace,
+        isRemoveUntil: isRemoveUntil,
+        routePredicate: routePredicate,
+      );
+    }
+    return null;
+  }
 
   @override
   Future<T?> turnCompleted<T extends Object?>(
@@ -229,6 +236,16 @@ abstract class Project extends Navigateable {
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
+    final package = turnRoute.package;
+    if (package != null &&
+        package.isNotEmpty &&
+        _modulesMap.containsKey(package)) {
+      return _modulesMap[package]!.turnCompleted(
+        result,
+        turnRoute,
+        arguments,
+      );
+    }
     return Future.value(result);
   }
 }
