@@ -238,11 +238,12 @@ class RouteTree {
     return component.startsWith(":");
   }
 
-  Map<String, Object> _castMap(
+  Map<String, Object>? _castMap(
     Map<String, List<String>> params,
     Map<String, QueryType>? typeMap,
   ) {
     params.removeWhere((key, value) => value.isEmpty);
+    if (params.isEmpty) return null;
     return params.map<String, Object>((key, values) => MapEntry(
           key,
           _parseKeyValue(key, values, typeMap?[key]),
