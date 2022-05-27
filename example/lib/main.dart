@@ -1,8 +1,14 @@
-import 'package:example/home.dart';
-import 'package:flutter/material.dart';
-import 'package:turn/turn.dart';
+import 'dart:async';
 
-void main() => runApp(MyApp());
+import 'package:example/routes/route.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runZonedGuarded(() {
+    initAppRoute();
+    runApp(MyApp());
+  }, (err, s) {});
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -10,12 +16,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Example",
-      home: Home(),
+      onGenerateRoute: AppRoute.I.generator,
     );
   }
 }
