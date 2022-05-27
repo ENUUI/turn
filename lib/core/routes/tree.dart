@@ -4,7 +4,7 @@ import 'transition_mode.dart';
 
 typedef NextPageBuilder = Widget Function(
   BuildContext context,
-  Arguments options,
+  Arguments arguments,
 );
 
 enum QueryType {
@@ -59,7 +59,7 @@ class MatchResult {
   MatchResult(this.route, {this.params});
 
   final TurnRoute route;
-  final Map<String, Object>? params;
+  final Map<String, dynamic>? params;
 }
 
 class TreeNode {
@@ -238,13 +238,13 @@ class RouteTree {
     return component.startsWith(":");
   }
 
-  Map<String, Object>? _castMap(
+  Map<String, dynamic>? _castMap(
     Map<String, List<String>> params,
     Map<String, QueryType>? typeMap,
   ) {
     params.removeWhere((key, value) => value.isEmpty);
     if (params.isEmpty) return null;
-    return params.map<String, Object>((key, values) => MapEntry(
+    return params.map<String, dynamic>((key, values) => MapEntry(
           key,
           _parseKeyValue(key, values, typeMap?[key]),
         ));

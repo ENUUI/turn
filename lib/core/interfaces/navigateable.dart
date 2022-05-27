@@ -127,8 +127,19 @@ abstract class Project extends Navigateable {
 
   factory Project.base() => _BaseProject();
 
+  bool _fired = false;
+
+  /// Call when prepared.
   @mustCallSuper
   void fire() {
+    if (_fired) {
+      assert(() {
+        throw FlutterError('Can only be called once');
+      }());
+      return;
+    }
+    _fired = true;
+
     final modules = _modulesMap.values;
     if (modules.isEmpty) {
       assert(() {
@@ -283,6 +294,36 @@ abstract class Module extends Navigateable {
 
   void registerRoute(TurnRoute route) {
     parent._registerRoute(route, package: package);
+  }
+
+  void registerRoutePath(
+    String route,
+    NextPageBuilder builder, {
+    TransitionMode? transitionMode,
+    Map<String, QueryType>? queryTypeMap,
+  }) {
+    return registerRoute(TurnRoute(
+      route,
+      builder,
+      transitionMode: transitionMode,
+      queryTypeMap: queryTypeMap,
+    ));
+  }
+
+  /// If [Arguments.data] is not of Map<String, dynamic> type, it will be discarded.
+  void registerRoutePathMapData(
+    String route,
+    Widget Function(BuildContext context, Map<String, dynamic>? params)
+        builder, {
+    TransitionMode? transitionMode,
+    Map<String, QueryType>? queryTypeMap,
+  }) {
+    return registerRoute(TurnRoute(
+      route,
+      (context, arguments) => builder(context, arguments.commitDataAsMap()),
+      transitionMode: transitionMode,
+      queryTypeMap: queryTypeMap,
+    ));
   }
 
   void install();
