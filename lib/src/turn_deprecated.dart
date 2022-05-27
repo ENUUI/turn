@@ -157,20 +157,20 @@ extension NavigatorToDeprecated on Navigateable {
     BuildContext context,
     String action, {
     String? package,
-    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
-    @Deprecated('Use [data] instead') Express? express,
     Object? data,
     bool replace = false,
     bool clearStack = false,
-    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
+    RoutePredicate? predicate, // clearStack = true
     TransitionMode? transitionMode,
+    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
+    @Deprecated('Use [data] instead') Express? express,
+    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
     @Deprecated('Use [TransitionMode] instead')
         RouteTransitionsBuilder? transitionBuilder,
     @Deprecated('Use [TransitionMode] instead')
         Duration duration = const Duration(milliseconds: 250),
     @Deprecated('Use [TransitionMode] instead')
         TurnRouteBuilder? turnRouteBuilder,
-    RoutePredicate? predicate, // clearStack = true
   }) async {
     TransitionMode mode = transitionMode ??
         transition?.convertTo(
