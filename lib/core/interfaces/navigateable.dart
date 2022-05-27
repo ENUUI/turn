@@ -4,12 +4,9 @@ import '../routes/argument.dart';
 import '../routes/transition_mode.dart';
 import '../routes/tree.dart';
 import '../routes/navigator_to.dart';
-import 'target.dart';
 
 abstract class Navigateable {
   NavigatorTo get navigatorTo;
-
-  void registerRoute(TurnRoute route);
 
   WidgetBuilder? notFoundPage(
     BuildContext context,
@@ -130,6 +127,18 @@ abstract class Project extends Navigateable {
 
   factory Project.base() => _BaseProject();
 
+  @mustCallSuper
+  void fire() {
+    final modules = _modulesMap.values;
+    if (modules.isEmpty) {
+      assert(() {
+        throw FlutterError('At least one instance of [Module] is required');
+      }());
+      return;
+    }
+    modules.forEach((e) => e.install());
+  }
+
   void registerModule(Module module) {
     if (_modulesMap.containsKey(module.package)) {
       assert(() {
@@ -141,8 +150,7 @@ abstract class Project extends Navigateable {
     _modulesMap[module.package] = module;
   }
 
-  @override
-  void registerRoute(TurnRoute route, {String? package}) {
+  void _registerRoute(TurnRoute route, {String? package}) {
     if (package != null && package.isNotEmpty) {
       route = route.copy(package: package);
     }
@@ -273,15 +281,11 @@ abstract class Module extends Navigateable {
 
   Project? _parent;
 
-  @override
   void registerRoute(TurnRoute route) {
-    parent.registerRoute(route, package: package);
+    parent._registerRoute(route, package: package);
   }
 
-  void registerTargets(Iterable<Target> targets) {
-    if (targets.isEmpty) return;
-    targets.forEach((t) => t.registerTurnRoutes(this));
-  }
+  void install();
 
   /// ##
   ///
