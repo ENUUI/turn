@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../src/express.dart';
-import '../../src/turn.dart';
 import 'argument.dart';
 import 'transition_mode.dart';
-import '../extensions/transition_type.dart';
 import 'tree.dart';
 import '../interfaces/matchable.dart';
 
 class NavigatorTo {
-  NavigatorTo(this.matchable);
+  NavigatorTo(this.project);
 
-  final Matchable matchable;
+  final Project project;
 
   Future<T?> push<T extends Object?>(
     BuildContext context,
@@ -82,7 +79,7 @@ class NavigatorTo {
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) async {
-    final matchResult = matchable.matchRoute(
+    final matchResult = project.matchRoute(
       path,
       package: package,
       fallthrough: fallthrough,
@@ -156,70 +153,12 @@ class NavigatorTo {
       ),
     );
   }
-
-  /// Pop
-  void pop<T extends Object>(BuildContext context, [T? result]) =>
-      Navigator.pop<T>(context, result);
-
-  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
-      Navigator.maybePop<T>(context, result);
-
-  void popUntil(BuildContext context, String routePath, {String? package}) {
-    final matchResult = matchable.matchRoute(routePath);
-    if (matchResult == null) {
-      assert(() {
-        throw FlutterError('RoutePath($routePath) is invalid!');
-      }());
-      return;
-    }
-    Navigator.popUntil(
-      context,
-      ModalRoute.withName(matchResult.route.route),
-    );
-  }
-
-  bool canPop(BuildContext context) => Navigator.canPop(context);
-
-  Route<dynamic> generator(RouteSettings routeSettings) {
-    final arguments = routeSettings.arguments;
-    final name = routeSettings.name ?? '';
-    final matchResult = matchable.matchRoute(name);
-
-    if (matchResult == null) {
-      return MaterialPageRoute(
-        settings: routeSettings,
-        builder: (BuildContext context) {
-          final page404Builder = notFoundPage(context, '', arguments);
-          if (page404Builder != null) return page404Builder(context);
-          assert(() {
-            throw FlutterError.fromParts(<DiagnosticsNode>[
-              ErrorSummary('Page Not Found!'),
-              ErrorDescription('routePath: $name, arguments: $arguments')
-            ]);
-          }());
-          return const Scaffold();
-        },
-      );
-    }
-
-    final useRoute = matchResult.route;
-    final args = Arguments(
-      useRoute.route,
-      data: arguments,
-      params: matchResult.params,
-    );
-    return createRoute(
-      useRoute,
-      args,
-      useRoute.transitionMode ?? TransitionMode.native,
-    );
-  }
 }
 
 extension on NavigatorTo {
   WidgetBuilder? notFoundPage(
       BuildContext context, String route, Object? data) {
-    return matchable.notFoundPage(context, route, data);
+    return project.notFoundPage(context, route, data);
   }
 
   Future<T?>? willTurnTo<T extends Object?, TO extends Object?>(
@@ -232,7 +171,7 @@ extension on NavigatorTo {
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) =>
-      matchable.willTurnTo(
+      project.willTurnTo(
         context,
         turnRoute,
         arguments,
@@ -249,66 +188,6 @@ extension on NavigatorTo {
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return matchable.turnCompleted<T>(result, turnRoute, arguments);
-  }
-}
-
-extension NavigatorToDeprecated on NavigatorTo {
-  @Deprecated('Use [push] [pushUntil] [replace] instead')
-  Future to(
-    BuildContext context,
-    String action, {
-    String? package,
-    @Deprecated('Use [data] instead') Map<String, dynamic>? params,
-    @Deprecated('Use [data] instead') Express? express,
-    Object? data,
-    bool replace = false,
-    bool clearStack = false,
-    @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
-    TransitionMode? transitionMode,
-    @Deprecated('Use [TransitionMode] instead')
-        RouteTransitionsBuilder? transitionBuilder,
-    @Deprecated('Use [TransitionMode] instead')
-        Duration duration = const Duration(milliseconds: 250),
-    @Deprecated('Use [TransitionMode] instead')
-        TurnRouteBuilder? turnRouteBuilder,
-    RoutePredicate? predicate, // clearStack = true
-  }) async {
-    TransitionMode mode = transitionMode ??
-        transition?.convertTo(
-          transitionsBuilder: transitionBuilder,
-          context: context,
-          routeBuilder: turnRouteBuilder,
-        ) ??
-        TransitionMode.native;
-    if (replace) {
-      return this.replace(
-        context,
-        action,
-        data: data ?? params ?? express,
-        package: package,
-        fallthrough: true,
-        transitionMode: mode,
-      );
-    } else if (clearStack) {
-      return pushUntil(
-        context,
-        action,
-        data: data ?? params ?? express,
-        package: package,
-        fallthrough: true,
-        transitionMode: mode,
-        routePredicate: predicate,
-      );
-    } else {
-      return push(
-        context,
-        action,
-        data: data ?? params ?? express,
-        package: package,
-        fallthrough: true,
-        transitionMode: mode,
-      );
-    }
+    return project.turnCompleted<T>(result, turnRoute, arguments);
   }
 }

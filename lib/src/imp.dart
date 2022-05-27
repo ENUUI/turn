@@ -1,11 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:turn/src/express.dart';
-import 'package:turn/src/turn.dart';
+import 'package:turn/src/turn_deprecated.dart';
+import '../core/interfaces/matchable.dart';
 import '../core/routes/navigator_to.dart';
-import '../core/interfaces/project.dart';
 import '../core/routes/transition_mode.dart';
-import '../core/extensions/transition_type.dart';
 
 class Turn {
   static Project get project {
@@ -24,16 +21,16 @@ class Turn {
   }
 
   static void pop<T extends Object>(BuildContext context, [T? result]) =>
-      navigatorTo.pop<T>(context, result);
+      project.pop<T>(context, result);
 
   static Future<bool> maybePop<T extends Object>(BuildContext context,
           [T? result]) =>
-      navigatorTo.maybePop<T>(context, result);
+      project.maybePop<T>(context, result);
 
   static void popUntil(BuildContext context, String action) =>
-      navigatorTo.popUntil(context, action);
+      project.popUntil(context, action);
 
-  static bool canPop(BuildContext context) => navigatorTo.canPop(context);
+  static bool canPop(BuildContext context) => project.canPop(context);
 
   static Future to(
     BuildContext context,
@@ -62,7 +59,7 @@ class Turn {
         ) ??
         TransitionMode.native;
     if (replace) {
-      return navigatorTo.replace(
+      return project.replace(
         context,
         action,
         data: data ?? params ?? express,
@@ -71,7 +68,7 @@ class Turn {
         transitionMode: mode,
       );
     } else if (clearStack) {
-      return navigatorTo.pushUntil(
+      return project.pushUntil(
         context,
         action,
         data: data ?? params ?? express,
@@ -81,7 +78,7 @@ class Turn {
         routePredicate: predicate,
       );
     } else {
-      return navigatorTo.push(
+      return project.push(
         context,
         action,
         data: data ?? params ?? express,

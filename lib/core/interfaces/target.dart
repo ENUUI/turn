@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'module.dart';
-import '../../src/opts.dart';
+import '../../src/turn_deprecated.dart';
+import 'matchable.dart';
 
 abstract class Target {
   @Deprecated('Use [registerTurnRoutes] instead.')
