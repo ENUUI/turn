@@ -21,20 +21,20 @@ abstract class Navigateable {
   ///   [to] / [replace] / [toUntil] 将会被拦截
   /// 且以下方法都不会被调用
   ///   [willTransitionPage] / [shouldTransitionRoute]
-  Future<T?>? willTurnTo<T extends Object?, TO extends Object?>(
+  Future? willTurnTo(
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
     TransitionMode? mode,
-    TO? result,
+    Object? result,
     bool isReplace = false,
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) =>
       null;
 
-  Future<T?> turnCompleted<T extends Object?>(
-    T? result,
+  Future turnCompleted(
+    Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
@@ -44,7 +44,7 @@ abstract class Navigateable {
   ///
   ///
   ///
-  Future<T?> push<T extends Object?>(
+  Future push(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -52,7 +52,7 @@ abstract class Navigateable {
     bool fallthrough = true,
     TransitionMode? transitionMode,
   }) =>
-      navigatorTo.push<T>(
+      navigatorTo.push(
         context,
         routePath,
         data: data,
@@ -61,7 +61,7 @@ abstract class Navigateable {
         transitionMode: transitionMode,
       );
 
-  Future<T?> pushUntil<T extends Object?>(
+  Future pushUntil(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -70,7 +70,7 @@ abstract class Navigateable {
     TransitionMode? transitionMode,
     RoutePredicate? routePredicate,
   }) =>
-      navigatorTo.pushUntil<T>(
+      navigatorTo.pushUntil(
         context,
         routePath,
         data: data,
@@ -80,16 +80,16 @@ abstract class Navigateable {
         routePredicate: routePredicate,
       );
 
-  Future<T?> replace<T extends Object?, TO extends Object?>(
+  Future replace(
     BuildContext context,
     String routePath, {
     Object? data,
     String? package,
     bool fallthrough = true,
     TransitionMode? transitionMode,
-    TO? result,
+    Object? result,
   }) =>
-      navigatorTo.replace<T, TO>(
+      navigatorTo.replace(
         context,
         routePath,
         data: data,
@@ -223,12 +223,12 @@ abstract class Project extends Navigateable {
   ///   [willTransitionPage] / [shouldTransitionRoute]
   /// 如果有对应的package，则会先尝试子module去执行
   @override
-  Future<T?>? willTurnTo<T extends Object?, TO extends Object?>(
+  Future? willTurnTo(
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
     TransitionMode? mode,
-    TO? result,
+    Object? result,
     bool isReplace = false,
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
@@ -250,8 +250,8 @@ abstract class Project extends Navigateable {
   }
 
   @override
-  Future<T?> turnCompleted<T extends Object?>(
-    T? result,
+  Future turnCompleted(
+    Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
@@ -332,7 +332,7 @@ abstract class Module extends Navigateable {
   ///
   ///
   @override
-  Future<T?> push<T extends Object?>(
+  Future push(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -340,7 +340,7 @@ abstract class Module extends Navigateable {
     bool fallthrough = true,
     TransitionMode? transitionMode,
   }) =>
-      super.push<T>(
+      super.push(
         context,
         routePath,
         data: data,
@@ -350,7 +350,7 @@ abstract class Module extends Navigateable {
       );
 
   @override
-  Future<T?> pushUntil<T extends Object?>(
+  Future pushUntil(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -359,7 +359,7 @@ abstract class Module extends Navigateable {
     TransitionMode? transitionMode,
     RoutePredicate? routePredicate,
   }) =>
-      super.pushUntil<T>(
+      super.pushUntil(
         context,
         routePath,
         data: data,
@@ -370,16 +370,16 @@ abstract class Module extends Navigateable {
       );
 
   @override
-  Future<T?> replace<T extends Object?, TO extends Object?>(
+  Future replace(
     BuildContext context,
     String routePath, {
     Object? data,
     String? package,
     bool fallthrough = true,
     TransitionMode? transitionMode,
-    TO? result,
+    Object? result,
   }) =>
-      super.replace<T, TO>(
+      super.replace(
         context,
         routePath,
         data: data,

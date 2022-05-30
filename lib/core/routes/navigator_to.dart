@@ -10,7 +10,7 @@ class NavigatorTo {
 
   final Project project;
 
-  Future<T?> push<T extends Object?>(
+  Future push(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -18,7 +18,7 @@ class NavigatorTo {
     bool fallthrough = true,
     TransitionMode? transitionMode,
   }) =>
-      _next<T, void>(
+      _next(
         context,
         routePath,
         data: data,
@@ -27,7 +27,7 @@ class NavigatorTo {
         mode: transitionMode,
       );
 
-  Future<T?> pushUntil<T extends Object?>(
+  Future pushUntil(
     BuildContext context,
     String routePath, {
     Object? data,
@@ -36,7 +36,7 @@ class NavigatorTo {
     TransitionMode? transitionMode,
     RoutePredicate? routePredicate,
   }) =>
-      _next<T, void>(
+      _next(
         context,
         routePath,
         data: data,
@@ -47,16 +47,16 @@ class NavigatorTo {
         isRemoveUntil: true,
       );
 
-  Future<T?> replace<T extends Object?, TO extends Object?>(
+  Future replace(
     BuildContext context,
     String routePath, {
     Object? data,
     String? package,
     bool fallthrough = true,
     TransitionMode? transitionMode,
-    TO? result,
+    Object? result,
   }) =>
-      _next<T, TO>(
+      _next(
         context,
         routePath,
         data: data,
@@ -67,12 +67,12 @@ class NavigatorTo {
         isReplace: true,
       );
 
-  Future<T?> _next<T extends Object?, TO extends Object?>(
+  Future _next(
     BuildContext context,
     String path, {
     dynamic data,
     TransitionMode? mode,
-    TO? result,
+    Object? result,
     String? package,
     bool fallthrough = true,
     bool isReplace = false,
@@ -88,7 +88,7 @@ class NavigatorTo {
       final page404Builder = notFoundPage(context, path, data);
       if (page404Builder != null) {
         mode ??= TransitionMode.native;
-        return Navigator.push<T>(
+        return Navigator.push(
             context,
             mode.generator(
               page404Builder,
@@ -106,7 +106,7 @@ class NavigatorTo {
       data: data,
       params: matchResult.params,
     );
-    final anyFuture = willTurnTo<T, TO>(
+    final anyFuture = willTurnTo(
       context,
       useRoute,
       arguments,
@@ -119,21 +119,21 @@ class NavigatorTo {
 
     if (anyFuture != null) return anyFuture;
 
-    final route = createRoute<T>(useRoute, arguments, mode);
+    final route = createRoute(useRoute, arguments, mode);
 
-    T? pushResult;
+    dynamic pushResult;
 
     if (isRemoveUntil) {
-      pushResult = await Navigator.pushAndRemoveUntil<T>(
+      pushResult = await Navigator.pushAndRemoveUntil(
         context,
         route,
         routePredicate ?? (r) => false,
       );
     } else if (isReplace) {
-      pushResult = await Navigator.pushReplacement<T, TO>(context, route,
-          result: result);
+      pushResult =
+          await Navigator.pushReplacement(context, route, result: result);
     } else {
-      pushResult = await Navigator.push<T>(context, route);
+      pushResult = await Navigator.push(context, route);
     }
 
     return turnCompleted(pushResult, useRoute, arguments);
@@ -161,12 +161,12 @@ extension on NavigatorTo {
     return project.notFoundPage(context, route, data);
   }
 
-  Future<T?>? willTurnTo<T extends Object?, TO extends Object?>(
+  Future? willTurnTo(
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
     TransitionMode? mode,
-    TO? result,
+    Object? result,
     bool isReplace = false,
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
@@ -183,11 +183,11 @@ extension on NavigatorTo {
       );
 
   /// 在当前 push 事件结束后调用
-  Future<T?> turnCompleted<T extends Object?>(
-    T? result,
+  Future turnCompleted(
+    Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return project.turnCompleted<T>(result, turnRoute, arguments);
+    return project.turnCompleted(result, turnRoute, arguments);
   }
 }
