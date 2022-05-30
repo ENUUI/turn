@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:turn/core/extensions/navigateable.dart';
 import 'package:turn/src/turn_deprecated.dart';
 import '../core/interfaces/navigateable.dart';
 import '../core/routes/navigator_to.dart';

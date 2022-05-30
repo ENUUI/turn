@@ -4,6 +4,8 @@ export 'src/navigator_ob.dart';
 export 'src/imp.dart';
 export 'src/turn_deprecated.dart';
 
+export 'core/extensions/navigateable.dart';
+
 export 'core/interfaces/navigateable.dart';
 export 'core/interfaces/target.dart';
 
