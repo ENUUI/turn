@@ -12,5 +12,5 @@ abstract class Target {
     return task(options.path, options.params);
   }
 
-  void registerTurnRoutes(Module module) {}
+  void registerTurnRoutes(Package module) {}
 }

@@ -6,7 +6,7 @@ import 'package:turn/turn.dart';
 
 import '../pages/discovery/index.dart';
 
-class AppRoute extends Project {
+class AppRoute extends TurnTo {
   AppRoute._();
 
   static final AppRoute I = AppRoute._();
@@ -15,7 +15,7 @@ class AppRoute extends Project {
   final SubModule sub = SubModule();
 }
 
-class MainModule extends Module {
+class MainModule extends Package {
   @override
   String get package => 'main';
 

@@ -118,14 +118,14 @@ abstract class Navigateable {
 ///
 ///
 ///
-abstract class Project extends Navigateable {
-  Project();
+abstract class TurnTo extends Navigateable {
+  TurnTo();
 
   late final NavigatorTo navigatorTo = NavigatorTo(this);
   final RouteTree _routeTree = RouteTree();
-  final Map<String, Module> _modulesMap = <String, Module>{};
+  final Map<String, Package> _packagesMap = <String, Package>{};
 
-  factory Project.base() => _BaseProject();
+  factory TurnTo.base() => _BaseTurnTo();
 
   bool _fired = false;
 
@@ -140,25 +140,25 @@ abstract class Project extends Navigateable {
     }
     _fired = true;
 
-    final modules = _modulesMap.values;
-    if (modules.isEmpty) {
+    final packages = _packagesMap.values;
+    if (packages.isEmpty) {
       assert(() {
         throw FlutterError('At least one instance of [Module] is required');
       }());
       return;
     }
-    modules.forEach((e) => e.install());
+    packages.forEach((e) => e.install());
   }
 
-  void registerModule(Module module) {
-    if (_modulesMap.containsKey(module.package)) {
+  void registerModule(Package package) {
+    if (_packagesMap.containsKey(package.package)) {
       assert(() {
-        throw FlutterError('Package `${module.package}` has already been set.');
+        throw FlutterError('Package `${package.package}` has already been set.');
       }());
       return;
     }
-    module._parent = this;
-    _modulesMap[module.package] = module;
+    package._parent = this;
+    _packagesMap[package.package] = package;
   }
 
   void _registerRoute(TurnRoute route, {String? package}) {
@@ -235,7 +235,7 @@ abstract class Project extends Navigateable {
   }) {
     final package = turnRoute.package;
     if (package != null && package.isNotEmpty) {
-      return _modulesMap[package]?.willTurnTo(
+      return _packagesMap[package]?.willTurnTo(
         context,
         turnRoute,
         arguments,
@@ -258,8 +258,8 @@ abstract class Project extends Navigateable {
     final package = turnRoute.package;
     if (package != null &&
         package.isNotEmpty &&
-        _modulesMap.containsKey(package)) {
-      return _modulesMap[package]!.turnCompleted(
+        _packagesMap.containsKey(package)) {
+      return _packagesMap[package]!.turnCompleted(
         result,
         turnRoute,
         arguments,
@@ -269,18 +269,18 @@ abstract class Project extends Navigateable {
   }
 }
 
-class _BaseProject extends Project {}
+class _BaseTurnTo extends TurnTo {}
 
 ///
 ///
 ///
-abstract class Module extends Navigateable {
+abstract class Package extends Navigateable {
   @override
   NavigatorTo get navigatorTo => parent.navigatorTo;
 
   String get package;
 
-  Project get parent {
+  TurnTo get parent {
     assert(() {
       if (_parent == null) {
         throw FlutterError('Set a parent before use.');
@@ -290,7 +290,7 @@ abstract class Module extends Navigateable {
     return _parent!;
   }
 
-  Project? _parent;
+  TurnTo? _parent;
 
   void registerRoute(TurnRoute route) {
     parent._registerRoute(route, package: package);

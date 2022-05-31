@@ -2,36 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:turn/core/extensions/navigateable.dart';
 import 'package:turn/src/turn_deprecated.dart';
 import '../core/interfaces/navigateable.dart';
-import '../core/routes/navigator_to.dart';
 import '../core/routes/transition_mode.dart';
 
 class Turn {
-  static Project get project {
-    if (_project == null) {
+  static TurnTo get turnTo {
+    if (_turnTo == null) {
       throw FlutterError('Set an instance of Project before use.');
     }
-    return _project!;
+    return _turnTo!;
   }
 
-  static NavigatorTo get navigatorTo => project.navigatorTo;
+  static TurnTo? _turnTo;
 
-  static Project? _project;
-
-  static void setProject(Project project) {
-    _project = project;
+  static void setProject(TurnTo project) {
+    _turnTo = project;
   }
 
   static void pop<T extends Object>(BuildContext context, [T? result]) =>
-      project.pop<T>(context, result);
+      turnTo.pop<T>(context, result);
 
   static Future<bool> maybePop<T extends Object>(BuildContext context,
           [T? result]) =>
-      project.maybePop<T>(context, result);
+      turnTo.maybePop<T>(context, result);
 
   static void popUntil(BuildContext context, String action) =>
-      project.popUntil(context, action);
+      turnTo.popUntil(context, action);
 
-  static bool canPop(BuildContext context) => project.canPop(context);
+  static bool canPop(BuildContext context) => turnTo.canPop(context);
 
   static Future to(
     BuildContext context,
@@ -60,7 +57,7 @@ class Turn {
         ) ??
         TransitionMode.native;
     if (replace) {
-      return project.replace(
+      return turnTo.replace(
         context,
         action,
         data: data ?? params ?? express,
@@ -69,7 +66,7 @@ class Turn {
         transitionMode: mode,
       );
     } else if (clearStack) {
-      return project.pushUntil(
+      return turnTo.pushUntil(
         context,
         action,
         data: data ?? params ?? express,
@@ -79,7 +76,7 @@ class Turn {
         routePredicate: predicate,
       );
     } else {
-      return project.push(
+      return turnTo.push(
         context,
         action,
         data: data ?? params ?? express,
@@ -91,6 +88,6 @@ class Turn {
   }
 
   static Route<dynamic> generator(RouteSettings routeSettings) {
-    return project.generator(routeSettings);
+    return turnTo.generator(routeSettings);
   }
 }

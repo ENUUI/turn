@@ -3,7 +3,7 @@ import 'package:turn/turn.dart';
 
 import '../pages/index/index.dart';
 
-class SubModule extends Module {
+class SubModule extends Package {
   SubModule();
 
   @override

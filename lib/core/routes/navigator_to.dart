@@ -8,7 +8,7 @@ import '../interfaces/navigateable.dart';
 class NavigatorTo {
   NavigatorTo(this.project);
 
-  final Project project;
+  final TurnTo project;
 
   Future push(
     BuildContext context,
