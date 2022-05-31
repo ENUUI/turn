@@ -39,7 +39,7 @@ class MainModule extends Package {
 }
 
 void initAppRoute() {
-  AppRoute.I.registerModule(AppRoute.I.main);
-  AppRoute.I.registerModule(AppRoute.I.sub);
+  AppRoute.I.registerPackage(AppRoute.I.main);
+  AppRoute.I.registerPackage(AppRoute.I.sub);
   AppRoute.I.fire();
 }

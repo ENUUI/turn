@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/interfaces/navigateable.dart';
-import '../core/routes/transition_mode.dart';
-
 @Deprecated('Use [TransitionMode] instead')
 enum TransitionType {
   native,

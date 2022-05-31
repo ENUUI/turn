@@ -150,7 +150,7 @@ abstract class TurnTo extends Navigateable {
     packages.forEach((e) => e.install());
   }
 
-  void registerModule(Package package) {
+  void registerPackage(Package package) {
     if (_packagesMap.containsKey(package.package)) {
       assert(() {
         throw FlutterError('Package `${package.package}` has already been set.');
