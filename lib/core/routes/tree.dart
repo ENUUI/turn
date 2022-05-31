@@ -336,7 +336,7 @@ class RoutePath {
     final parts = <String>[];
     final params = <String, List<String>>{};
     for (final part in components) {
-      if (path.contains('?')) {
+      if (part.contains('?')) {
         final splitParts = part.split('?');
         parts.add(splitParts[0]);
         params.addAll(_parseQueryString(splitParts[1]));
