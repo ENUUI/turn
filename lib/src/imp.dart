@@ -49,13 +49,12 @@ class Turn {
     @Deprecated('Use [TransitionMode] instead')
         TurnRouteBuilder? turnRouteBuilder,
   }) async {
-    TransitionMode mode = transitionMode ??
+    final mode = transitionMode ??
         transition?.convertTo(
           transitionsBuilder: transitionBuilder,
           context: context,
           routeBuilder: turnRouteBuilder,
-        ) ??
-        TransitionMode.native;
+        );
     if (replace) {
       return turnTo.replace(
         context,

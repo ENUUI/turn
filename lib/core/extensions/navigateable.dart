@@ -24,13 +24,12 @@ extension NavigatorToDeprecated on Navigateable {
     @Deprecated('Use [TransitionMode] instead')
         TurnRouteBuilder? turnRouteBuilder,
   }) async {
-    TransitionMode mode = transitionMode ??
+    TransitionMode? mode = transitionMode ??
         transition?.convertTo(
           transitionsBuilder: transitionBuilder,
           context: context,
           routeBuilder: turnRouteBuilder,
-        ) ??
-        TransitionMode.native;
+        );
     if (replace) {
       return this.replace(
         context,
