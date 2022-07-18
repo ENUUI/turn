@@ -119,6 +119,8 @@ class NavigatorTo {
 
     if (anyFuture != null) return anyFuture;
 
+    await beforeTureTo(context, useRoute, arguments);
+
     final route = createRoute(useRoute, arguments, mode);
 
     dynamic pushResult;
@@ -181,6 +183,12 @@ extension on NavigatorTo {
         isRemoveUntil: isRemoveUntil,
         routePredicate: routePredicate,
       );
+
+  Future beforeTureTo(
+    BuildContext context,
+    TurnRoute turnRoute,
+    Arguments arguments,
+  ) => project.beforeTurnTo(context, turnRoute, arguments);
 
   /// 在当前 push 事件结束后调用
   Future turnCompleted(

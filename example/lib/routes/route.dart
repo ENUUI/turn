@@ -36,6 +36,31 @@ class MainModule extends Package {
       queryTypeMap: {'id': QueryType.integer},
     ));
   }
+
+  @override
+  Future? willTurnTo(
+      BuildContext context, TurnRoute turnRoute, Arguments arguments,
+      {TransitionMode? mode,
+      Object? result,
+      bool isReplace = false,
+      bool isRemoveUntil = false,
+      RoutePredicate? routePredicate}) {
+    return super.willTurnTo(
+      context,
+      turnRoute,
+      arguments,
+      mode: mode,
+      result: result,
+      isReplace: isReplace,
+      isRemoveUntil: isRemoveUntil,
+      routePredicate: routePredicate,
+    );
+  }
+
+  @override
+  Future beforeTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments) {
+    return super.beforeTurnTo(context, turnRoute, arguments);
+  }
 }
 
 void initAppRoute() {

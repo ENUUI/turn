@@ -33,6 +33,14 @@ abstract class Navigateable {
   }) =>
       null;
 
+  /// 不会阻断最终push，除非 beforeTurnTo 抛出异常
+  Future beforeTurnTo(
+    BuildContext context,
+    TurnRoute turnRoute,
+    Arguments arguments,
+  ) =>
+      Future.value();
+
   Future turnCompleted(
     Object? result,
     TurnRoute turnRoute,
@@ -222,6 +230,7 @@ abstract class TurnTo extends Navigateable {
   /// 且以下方法都不会被调用
   ///   [willTransitionPage] / [shouldTransitionRoute]
   /// 如果有对应的package，则会先尝试子module去执行
+  @mustCallSuper
   @override
   Future? willTurnTo(
     BuildContext context,
@@ -249,6 +258,20 @@ abstract class TurnTo extends Navigateable {
     return null;
   }
 
+  @mustCallSuper
+  @override
+  Future beforeTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments) {
+    final package = turnRoute.package;
+    if (package != null && package.isNotEmpty) {
+      final p = _packagesMap[package];
+      if (p != null) {
+        return p.beforeTurnTo(context, turnRoute, arguments);
+      }
+    }
+    return Future.value();
+  }
+
+  @mustCallSuper
   @override
   Future turnCompleted(
     Object? result,
