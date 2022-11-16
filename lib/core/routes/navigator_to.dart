@@ -138,7 +138,7 @@ class NavigatorTo {
       pushResult = await Navigator.push(context, route);
     }
 
-    return turnCompleted(pushResult, useRoute, arguments);
+    return turnCompleted(context, pushResult, useRoute, arguments);
   }
 
   Route<T> createRoute<T extends Object?>(
@@ -188,14 +188,16 @@ extension on NavigatorTo {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments,
-  ) => project.beforeTurnTo(context, turnRoute, arguments);
+  ) =>
+      project.beforeTurnTo(context, turnRoute, arguments);
 
   /// 在当前 push 事件结束后调用
   Future turnCompleted(
+    BuildContext context,
     Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return project.turnCompleted(result, turnRoute, arguments);
+    return project.turnCompleted(context, result, turnRoute, arguments);
   }
 }

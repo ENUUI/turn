@@ -42,6 +42,7 @@ abstract class Navigateable {
       Future.value();
 
   Future turnCompleted(
+    BuildContext context,
     Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
@@ -161,7 +162,8 @@ abstract class TurnTo extends Navigateable {
   void registerPackage(Package package) {
     if (_packagesMap.containsKey(package.package)) {
       assert(() {
-        throw FlutterError('Package `${package.package}` has already been set.');
+        throw FlutterError(
+            'Package `${package.package}` has already been set.');
       }());
       return;
     }
@@ -260,7 +262,8 @@ abstract class TurnTo extends Navigateable {
 
   @mustCallSuper
   @override
-  Future beforeTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments) {
+  Future beforeTurnTo(
+      BuildContext context, TurnRoute turnRoute, Arguments arguments) {
     final package = turnRoute.package;
     if (package != null && package.isNotEmpty) {
       final p = _packagesMap[package];
@@ -274,6 +277,7 @@ abstract class TurnTo extends Navigateable {
   @mustCallSuper
   @override
   Future turnCompleted(
+    BuildContext context,
     Object? result,
     TurnRoute turnRoute,
     Arguments arguments,
@@ -283,6 +287,7 @@ abstract class TurnTo extends Navigateable {
         package.isNotEmpty &&
         _packagesMap.containsKey(package)) {
       return _packagesMap[package]!.turnCompleted(
+        context,
         result,
         turnRoute,
         arguments,
