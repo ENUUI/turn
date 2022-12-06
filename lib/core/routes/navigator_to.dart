@@ -10,38 +10,38 @@ class NavigatorTo {
 
   final TurnTo project;
 
-  Future push(
-    BuildContext context,
-    String routePath, {
-    bool rootNavigator = false,
-    Object? data,
-    String? package,
-    bool fallthrough = true,
-    TransitionMode? transitionMode,
-  }) =>
+  Future push(BuildContext context,
+      String routePath, {
+        bool rootNavigator = false,
+        Object? data,
+        String? package,
+        bool fallthrough = true,
+        TransitionMode? transitionMode,
+      }) =>
       _next(
         context,
         routePath,
         data: data,
+        rootNavigator: rootNavigator,
         package: package,
         fallthrough: fallthrough,
         mode: transitionMode,
       );
 
-  Future pushUntil(
-    BuildContext context,
-    String routePath, {
-    bool rootNavigator = false,
-    Object? data,
-    String? package,
-    bool fallthrough = true,
-    TransitionMode? transitionMode,
-    RoutePredicate? routePredicate,
-  }) =>
+  Future pushUntil(BuildContext context,
+      String routePath, {
+        bool rootNavigator = false,
+        Object? data,
+        String? package,
+        bool fallthrough = true,
+        TransitionMode? transitionMode,
+        RoutePredicate? routePredicate,
+      }) =>
       _next(
         context,
         routePath,
         data: data,
+        rootNavigator: rootNavigator,
         package: package,
         fallthrough: fallthrough,
         mode: transitionMode,
@@ -49,20 +49,20 @@ class NavigatorTo {
         isRemoveUntil: true,
       );
 
-  Future replace(
-    BuildContext context,
-    String routePath, {
-    bool rootNavigator = false,
-    Object? data,
-    String? package,
-    bool fallthrough = true,
-    TransitionMode? transitionMode,
-    Object? result,
-  }) =>
+  Future replace(BuildContext context,
+      String routePath, {
+        bool rootNavigator = false,
+        Object? data,
+        String? package,
+        bool fallthrough = true,
+        TransitionMode? transitionMode,
+        Object? result,
+      }) =>
       _next(
         context,
         routePath,
         data: data,
+        rootNavigator: rootNavigator,
         package: package,
         fallthrough: fallthrough,
         mode: transitionMode,
@@ -70,19 +70,18 @@ class NavigatorTo {
         isReplace: true,
       );
 
-  Future _next(
-    BuildContext context,
-    String path, {
-    bool rootNavigator = false,
-    dynamic data,
-    TransitionMode? mode,
-    Object? result,
-    String? package,
-    bool fallthrough = true,
-    bool isReplace = false,
-    bool isRemoveUntil = false,
-    RoutePredicate? routePredicate,
-  }) async {
+  Future _next(BuildContext context,
+      String path, {
+        bool rootNavigator = false,
+        dynamic data,
+        TransitionMode? mode,
+        Object? result,
+        String? package,
+        bool fallthrough = true,
+        bool isReplace = false,
+        bool isRemoveUntil = false,
+        RoutePredicate? routePredicate,
+      }) async {
     final matchResult = project.matchRoute(
       path,
       package: package,
@@ -149,14 +148,12 @@ class NavigatorTo {
     return turnCompleted(context, pushResult, useRoute, arguments);
   }
 
-  Route<T> createRoute<T extends Object?>(
-    TurnRoute turnRoute,
-    Arguments arguments,
-    TransitionMode? mode,
-  ) {
+  Route<T> createRoute<T extends Object?>(TurnRoute turnRoute,
+      Arguments arguments,
+      TransitionMode? mode,) {
     mode ??= turnRoute.transitionMode ?? TransitionMode.native;
     return mode.generator<T>(
-      (context) => turnRoute.builder(context, arguments),
+          (context) => turnRoute.builder(context, arguments),
       RouteSettings(
         name: turnRoute.route,
         arguments: arguments,
@@ -168,11 +165,11 @@ class NavigatorTo {
       Navigator.pop<T>(context, result);
 
   void rootPop<T extends Object>(BuildContext context,
-          {bool rootNavigator = false, T? result}) =>
+      {bool rootNavigator = false, T? result}) =>
       Navigator.of(context, rootNavigator: rootNavigator).pop<T>(result);
 
   Future<bool> rootMaybePop<T extends Object>(BuildContext context,
-          {bool rootNavigator = false, T? result}) =>
+      {bool rootNavigator = false, T? result}) =>
       Navigator.of(context, rootNavigator: rootNavigator).maybePop<T>(result);
 
   Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
@@ -190,22 +187,20 @@ class NavigatorTo {
 }
 
 extension on NavigatorTo {
-  WidgetBuilder? notFoundPage(
-      BuildContext context, String route, Object? data) {
+  WidgetBuilder? notFoundPage(BuildContext context, String route, Object? data) {
     return project.notFoundPage(context, route, data);
   }
 
-  Future? willTurnTo(
-    BuildContext context,
-    TurnRoute turnRoute,
-    Arguments arguments, {
-    bool rootNavigator = false,
-    TransitionMode? mode,
-    Object? result,
-    bool isReplace = false,
-    bool isRemoveUntil = false,
-    RoutePredicate? routePredicate,
-  }) =>
+  Future? willTurnTo(BuildContext context,
+      TurnRoute turnRoute,
+      Arguments arguments, {
+        bool rootNavigator = false,
+        TransitionMode? mode,
+        Object? result,
+        bool isReplace = false,
+        bool isRemoveUntil = false,
+        RoutePredicate? routePredicate,
+      }) =>
       project.willTurnTo(
         context,
         turnRoute,
@@ -218,20 +213,16 @@ extension on NavigatorTo {
         routePredicate: routePredicate,
       );
 
-  Future beforeTureTo(
-    BuildContext context,
-    TurnRoute turnRoute,
-    Arguments arguments,
-  ) =>
+  Future beforeTureTo(BuildContext context,
+      TurnRoute turnRoute,
+      Arguments arguments,) =>
       project.beforeTurnTo(context, turnRoute, arguments);
 
   /// 在当前 push 事件结束后调用
-  Future turnCompleted(
-    BuildContext context,
-    Object? result,
-    TurnRoute turnRoute,
-    Arguments arguments,
-  ) {
+  Future turnCompleted(BuildContext context,
+      Object? result,
+      TurnRoute turnRoute,
+      Arguments arguments,) {
     return project.turnCompleted(context, result, turnRoute, arguments);
   }
 }

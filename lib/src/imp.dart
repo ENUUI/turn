@@ -15,7 +15,7 @@ class Turn {
 
   static TurnTo? _turnTo;
 
-  static NavigatorTo get _navigatorTo => _navigatorTo;
+  static NavigatorTo get _navigatorTo => turnTo.navigatorTo;
 
   static void setProject(TurnTo project) {
     _turnTo = project;
@@ -50,6 +50,7 @@ class Turn {
     bool replace = false,
     bool clearStack = false,
     TransitionMode? transitionMode,
+    bool rootNavigator = false,
     RoutePredicate? predicate, // clearStack = true
     @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
     @Deprecated('Use [data] instead') Map<String, dynamic>? params,
@@ -68,6 +69,7 @@ class Turn {
       return _navigatorTo.replace(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
@@ -77,6 +79,7 @@ class Turn {
       return _navigatorTo.pushUntil(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
@@ -87,6 +90,7 @@ class Turn {
       return _navigatorTo.push(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
