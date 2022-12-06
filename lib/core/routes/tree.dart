@@ -53,6 +53,7 @@ class TurnRoute {
       transitionMode: transitionMode,
       queryTypeMap: queryTypeMap,
       package: package ?? this.package,
+      rootNavigator: rootNavigator,
     );
   }
 }
