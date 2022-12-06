@@ -35,7 +35,7 @@ class _HomeState extends State<Home> {
                 //   print(s);
                 // });
                 /// OR
-                AppRoute.I.sub.push(
+                AppRoute.I.sub.navigatorTo.push(
                   context,
                   'discovery',
                   package: 'main',
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I.push(
+                AppRoute.I.navigatorTo.push(
                   context,
                   'me/255',
                   data: {'key3': 'value3'},
@@ -62,9 +62,8 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I
-                    .push(context, 'discovery',
-                        data: {'key4': 'value4'}, package: 'sub')
+                AppRoute.I.navigatorTo
+                    .push(context, 'discovery', data: {'key4': 'value4'}, package: 'sub')
                     .catchError((err, s) {
                   print(err);
                   print(s);
@@ -74,7 +73,7 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I.push(
+                AppRoute.I.navigatorTo.push(
                   context,
                   'sub/page',
                   data: {'key1': 'value1'},

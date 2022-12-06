@@ -25,6 +25,7 @@ abstract class Navigateable {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
+    bool rootNavigator = false,
     TransitionMode? mode,
     Object? result,
     bool isReplace = false,
@@ -56,6 +57,7 @@ abstract class Navigateable {
   Future push(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -64,6 +66,7 @@ abstract class Navigateable {
       navigatorTo.push(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package,
         fallthrough: fallthrough,
@@ -73,6 +76,7 @@ abstract class Navigateable {
   Future pushUntil(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -82,6 +86,7 @@ abstract class Navigateable {
       navigatorTo.pushUntil(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package,
         fallthrough: fallthrough,
@@ -92,6 +97,7 @@ abstract class Navigateable {
   Future replace(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -101,6 +107,7 @@ abstract class Navigateable {
       navigatorTo.replace(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package,
         fallthrough: fallthrough,
@@ -108,20 +115,24 @@ abstract class Navigateable {
         result: result,
       );
 
-  void pop<T extends Object>(BuildContext context, [T? result]) =>
-      Navigator.pop<T>(context, result);
+  void pop<T extends Object>(BuildContext context, [T? result]) => Navigator.pop<T>(context, result);
 
-  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
-      Navigator.maybePop<T>(context, result);
+  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) => Navigator.maybePop<T>(context, result);
 
-  void popUntil(BuildContext context, String routePath, {String? package}) {
-    Navigator.popUntil(
-      context,
-      ModalRoute.withName(routePath),
-    );
+  void popUntil(BuildContext context, String routePath, {bool rootNavigator = false, String? package}) {
+    Navigator.of(context, rootNavigator: rootNavigator).popUntil(ModalRoute.withName(routePath));
   }
 
   bool canPop(BuildContext context) => Navigator.canPop(context);
+
+  void rootPop<T extends Object>(BuildContext context, {bool rootNavigator = false, T? result}) =>
+      Navigator.of(context, rootNavigator: rootNavigator).pop<T>(result);
+
+  Future<bool> rootMaybePop<T extends Object>(BuildContext context, {bool rootNavigator = false, T? result}) =>
+      Navigator.of(context, rootNavigator: rootNavigator).maybePop(result);
+
+  bool rootCanPop(BuildContext context, {bool rootNavigator = false}) =>
+      Navigator.of(context, rootNavigator: rootNavigator).canPop();
 }
 
 ///
@@ -162,8 +173,7 @@ abstract class TurnTo extends Navigateable {
   void registerPackage(Package package) {
     if (_packagesMap.containsKey(package.package)) {
       assert(() {
-        throw FlutterError(
-            'Package `${package.package}` has already been set.');
+        throw FlutterError('Package `${package.package}` has already been set.');
       }());
       return;
     }
@@ -238,6 +248,7 @@ abstract class TurnTo extends Navigateable {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
+    bool rootNavigator = false,
     TransitionMode? mode,
     Object? result,
     bool isReplace = false,
@@ -250,6 +261,7 @@ abstract class TurnTo extends Navigateable {
         context,
         turnRoute,
         arguments,
+        rootNavigator: rootNavigator,
         mode: mode,
         result: result,
         isReplace: isReplace,
@@ -262,8 +274,7 @@ abstract class TurnTo extends Navigateable {
 
   @mustCallSuper
   @override
-  Future beforeTurnTo(
-      BuildContext context, TurnRoute turnRoute, Arguments arguments) {
+  Future beforeTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments) {
     final package = turnRoute.package;
     if (package != null && package.isNotEmpty) {
       final p = _packagesMap[package];
@@ -283,9 +294,7 @@ abstract class TurnTo extends Navigateable {
     Arguments arguments,
   ) {
     final package = turnRoute.package;
-    if (package != null &&
-        package.isNotEmpty &&
-        _packagesMap.containsKey(package)) {
+    if (package != null && package.isNotEmpty && _packagesMap.containsKey(package)) {
       return _packagesMap[package]!.turnCompleted(
         context,
         result,
@@ -341,8 +350,7 @@ abstract class Package extends Navigateable {
   /// If [Arguments.data] is not of Map<String, dynamic> type, it will be discarded.
   void registerRoutePathMapData(
     String route,
-    Widget Function(BuildContext context, Map<String, dynamic>? params)
-        builder, {
+    Widget Function(BuildContext context, Map<String, dynamic>? params) builder, {
     TransitionMode? transitionMode,
     Map<String, QueryType>? queryTypeMap,
   }) {
@@ -363,6 +371,7 @@ abstract class Package extends Navigateable {
   Future push(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -371,6 +380,7 @@ abstract class Package extends Navigateable {
       super.push(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package ?? this.package,
         fallthrough: fallthrough,
@@ -381,6 +391,7 @@ abstract class Package extends Navigateable {
   Future pushUntil(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -390,6 +401,7 @@ abstract class Package extends Navigateable {
       super.pushUntil(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package ?? this.package,
         fallthrough: fallthrough,
@@ -401,6 +413,7 @@ abstract class Package extends Navigateable {
   Future replace(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -410,6 +423,7 @@ abstract class Package extends Navigateable {
       super.replace(
         context,
         routePath,
+        rootNavigator: rootNavigator,
         data: data,
         package: package ?? this.package,
         fallthrough: fallthrough,

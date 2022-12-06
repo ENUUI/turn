@@ -13,6 +13,7 @@ class NavigatorTo {
   Future push(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -30,6 +31,7 @@ class NavigatorTo {
   Future pushUntil(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -50,6 +52,7 @@ class NavigatorTo {
   Future replace(
     BuildContext context,
     String routePath, {
+    bool rootNavigator = false,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -70,6 +73,7 @@ class NavigatorTo {
   Future _next(
     BuildContext context,
     String path, {
+    bool rootNavigator = false,
     dynamic data,
     TransitionMode? mode,
     Object? result,
@@ -110,6 +114,7 @@ class NavigatorTo {
       context,
       useRoute,
       arguments,
+      rootNavigator: rootNavigator,
       mode: mode,
       result: result,
       isReplace: isReplace,
@@ -125,17 +130,20 @@ class NavigatorTo {
 
     dynamic pushResult;
 
+    final navigatorState = Navigator.of(
+      context,
+      rootNavigator: rootNavigator,
+    );
+
     if (isRemoveUntil) {
-      pushResult = await Navigator.pushAndRemoveUntil(
-        context,
+      pushResult = await navigatorState.pushAndRemoveUntil(
         route,
         routePredicate ?? (r) => false,
       );
     } else if (isReplace) {
-      pushResult =
-          await Navigator.pushReplacement(context, route, result: result);
+      pushResult = await navigatorState.pushReplacement(route, result: result);
     } else {
-      pushResult = await Navigator.push(context, route);
+      pushResult = await navigatorState.push(route);
     }
 
     return turnCompleted(context, pushResult, useRoute, arguments);
@@ -155,6 +163,30 @@ class NavigatorTo {
       ),
     );
   }
+
+  void pop<T extends Object>(BuildContext context, [T? result]) =>
+      Navigator.pop<T>(context, result);
+
+  void rootPop<T extends Object>(BuildContext context,
+          {bool rootNavigator = false, T? result}) =>
+      Navigator.of(context, rootNavigator: rootNavigator).pop<T>(result);
+
+  Future<bool> rootMaybePop<T extends Object>(BuildContext context,
+          {bool rootNavigator = false, T? result}) =>
+      Navigator.of(context, rootNavigator: rootNavigator).maybePop<T>(result);
+
+  Future<bool> maybePop<T extends Object>(BuildContext context, [T? result]) =>
+      Navigator.maybePop<T>(context, result);
+
+  void popUntil(BuildContext context, String routePath,
+      {bool rootNavigator = false, String? package}) {
+    Navigator.of(context, rootNavigator: rootNavigator).popUntil(
+      ModalRoute.withName(routePath),
+    );
+  }
+
+  bool canPop(BuildContext context, {bool rootNavigator = false}) =>
+      Navigator.of(context).canPop();
 }
 
 extension on NavigatorTo {
@@ -167,6 +199,7 @@ extension on NavigatorTo {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
+    bool rootNavigator = false,
     TransitionMode? mode,
     Object? result,
     bool isReplace = false,
@@ -177,6 +210,7 @@ extension on NavigatorTo {
         context,
         turnRoute,
         arguments,
+        rootNavigator: rootNavigator,
         mode: mode,
         result: result,
         isReplace: isReplace,

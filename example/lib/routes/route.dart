@@ -38,9 +38,9 @@ class MainModule extends Package {
   }
 
   @override
-  Future? willTurnTo(
-      BuildContext context, TurnRoute turnRoute, Arguments arguments,
+  Future? willTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments,
       {TransitionMode? mode,
+      bool rootNavigator = false,
       Object? result,
       bool isReplace = false,
       bool isRemoveUntil = false,
@@ -49,6 +49,7 @@ class MainModule extends Package {
       context,
       turnRoute,
       arguments,
+      rootNavigator: rootNavigator,
       mode: mode,
       result: result,
       isReplace: isReplace,

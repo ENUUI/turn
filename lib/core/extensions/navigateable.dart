@@ -8,6 +8,7 @@ extension NavigatorToDeprecated on Navigateable {
   Future to(
     BuildContext context,
     String action, {
+    bool rootNavigator = false,
     String? package,
     Object? data,
     bool replace = false,
@@ -31,18 +32,20 @@ extension NavigatorToDeprecated on Navigateable {
           routeBuilder: turnRouteBuilder,
         );
     if (replace) {
-      return this.replace(
+      return navigatorTo.replace(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
         transitionMode: mode,
       );
     } else if (clearStack) {
-      return pushUntil(
+      return navigatorTo.pushUntil(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
@@ -50,9 +53,10 @@ extension NavigatorToDeprecated on Navigateable {
         routePredicate: predicate,
       );
     } else {
-      return push(
+      return navigatorTo.push(
         context,
         action,
+        rootNavigator: rootNavigator,
         data: data ?? params ?? express,
         package: package,
         fallthrough: true,
