@@ -40,7 +40,7 @@ class MainModule extends Package {
   @override
   Future? willTurnTo(BuildContext context, TurnRoute turnRoute, Arguments arguments,
       {TransitionMode? mode,
-      bool rootNavigator = false,
+      bool? rootNavigator,
       Object? result,
       bool isReplace = false,
       bool isRemoveUntil = false,
