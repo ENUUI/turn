@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 
+@Deprecated('use package [turn_observer] instead.')
 final NavigatorObserver turnOb = _TurnOb();
 
+@Deprecated('use package [turn_observer] instead.')
 class TurnStack {
   TurnStack._();
 
@@ -53,11 +55,9 @@ class TurnStack {
 
   static Route? lastRoute([String? path]) => lastNode(path)?.route;
 
-  static Route? lastPreviousRoute([String? path]) =>
-      lastNode(path)?.previous?.route;
+  static Route? lastPreviousRoute([String? path]) => lastNode(path)?.previous?.route;
 
-  static String? lastPreviousPath([String? path]) =>
-      lastPreviousRoute(path)?.settings.name;
+  static String? lastPreviousPath([String? path]) => lastPreviousRoute(path)?.settings.name;
 
   /// private functions
   static void _push(Route next, {Route? previous}) {
@@ -97,6 +97,7 @@ class TurnStack {
   }
 }
 
+@Deprecated('use package [turn_observer] instead.')
 class TurnNode {
   TurnNode._({
     required this.route,
@@ -144,8 +145,7 @@ class _TurnOb extends NavigatorObserver {
   }
 
   @override
-  void didStartUserGesture(
-      Route<dynamic> route, Route<dynamic>? previousRoute) {}
+  void didStartUserGesture(Route<dynamic> route, Route<dynamic>? previousRoute) {}
 
   @override
   void didStopUserGesture() {}

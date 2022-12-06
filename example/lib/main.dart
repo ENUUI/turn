@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:example/routes/route.dart';
 import 'package:flutter/material.dart';
-
+import 'package:turn/turn.dart';
 void main() {
   runZonedGuarded(() {
     initAppRoute();
@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: "Example",
       onGenerateRoute: AppRoute.I.generator,
+      navigatorObservers: [turnOb],
     );
   }
 }
