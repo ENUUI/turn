@@ -50,7 +50,7 @@ class Turn {
     bool replace = false,
     bool clearStack = false,
     TransitionMode? transitionMode,
-    bool rootNavigator = false,
+    bool? rootNavigator,
     RoutePredicate? predicate, // clearStack = true
     @Deprecated('Use [TransitionMode] instead') TransitionType? transition,
     @Deprecated('Use [data] instead') Map<String, dynamic>? params,

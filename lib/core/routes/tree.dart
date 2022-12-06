@@ -26,12 +26,14 @@ class TurnRoute {
     this.transitionMode,
     this.queryTypeMap,
     this.package,
+    this.rootNavigator,
   });
 
   final String route;
   final NextPageBuilder builder;
   final TransitionMode? transitionMode;
   final String? package;
+  final bool? rootNavigator;
 
   /// e.g.
   ///   *  xxx/:id/xxx?name=Mark&age=49
@@ -318,8 +320,7 @@ class RoutePath {
     this.fallthrough = true,
   });
 
-  factory RoutePath.fromPath(String path,
-      {String? package, bool fallthrough = true}) {
+  factory RoutePath.fromPath(String path, {String? package, bool fallthrough = true}) {
     String usePath = path;
 
     if (usePath.startsWith('/')) {

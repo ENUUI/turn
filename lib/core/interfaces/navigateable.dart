@@ -25,7 +25,7 @@ abstract class Navigateable {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     TransitionMode? mode,
     Object? result,
     bool isReplace = false,
@@ -57,7 +57,7 @@ abstract class Navigateable {
   Future push(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -76,7 +76,7 @@ abstract class Navigateable {
   Future pushUntil(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -97,7 +97,7 @@ abstract class Navigateable {
   Future replace(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -248,7 +248,7 @@ abstract class TurnTo extends Navigateable {
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     TransitionMode? mode,
     Object? result,
     bool isReplace = false,
@@ -371,7 +371,7 @@ abstract class Package extends Navigateable {
   Future push(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -391,7 +391,7 @@ abstract class Package extends Navigateable {
   Future pushUntil(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
@@ -413,7 +413,7 @@ abstract class Package extends Navigateable {
   Future replace(
     BuildContext context,
     String routePath, {
-    bool rootNavigator = false,
+    bool? rootNavigator,
     Object? data,
     String? package,
     bool fallthrough = true,
