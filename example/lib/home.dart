@@ -1,5 +1,6 @@
 import 'package:example/routes/route.dart';
 import 'package:flutter/material.dart';
+import 'package:turn/turn.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
                 //   print(s);
                 // });
                 /// OR
-                AppRoute.I.sub.navigatorTo.push(
+                Turn.to(
                   context,
                   'discovery',
                   package: 'main',
@@ -49,7 +50,7 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I.navigatorTo.push(
+                Turn.to(
                   context,
                   'me/255',
                   data: {'key3': 'value3'},
@@ -62,9 +63,7 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I.navigatorTo
-                    .push(context, 'discovery', data: {'key4': 'value4'}, package: 'sub')
-                    .catchError((err, s) {
+                Turn.to(context, 'discovery', data: {'key4': 'value4'}, package: 'sub').catchError((err, s) {
                   print(err);
                   print(s);
                 });
@@ -73,7 +72,7 @@ class _HomeState extends State<Home> {
             ),
             MaterialButton(
               onPressed: () {
-                AppRoute.I.navigatorTo.push(
+                Turn.to(
                   context,
                   'sub/page',
                   data: {'key1': 'value1'},
