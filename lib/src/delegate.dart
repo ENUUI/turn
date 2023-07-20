@@ -27,7 +27,7 @@ abstract class TurnDelegate {
   }
 
   /// It will not block [Turn.to] unless an exception is thrown.
-  Future beforeTureTo(
+  Future beforeTurnTo(
     BuildContext context,
     TurnRoute turnRoute,
     Arguments arguments,

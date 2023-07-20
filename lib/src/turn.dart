@@ -58,11 +58,11 @@ class Turn {
   ///     subsequent instances of [Navigator].
   /// - [data]: The data to pass to the route.
   /// - [mode]: The route's transition.
-  /// - [result]: When [isReplace] is true, it will be returned to the previous page.
+  /// - [result]: When [replace] is true, it will be returned to the previous page.
   /// - [package]: The package of the route to turn to.
   /// - [fallthrough]: If the route is not found, whether to continue to find the route in the other package.
-  /// - [isReplace]: [NavigatorState.pushReplacement] .
-  /// - [isRemoveUntil/routePredicate]: [NavigatorState.pushAndRemoveUntil].
+  /// - [replace]: [NavigatorState.pushReplacement] .
+  /// - [removeUntil/routePredicate]: [NavigatorState.pushAndRemoveUntil].
   static Future to(
     BuildContext context,
     String path, {
@@ -72,8 +72,8 @@ class Turn {
     Object? result,
     String? package,
     bool fallthrough = true,
-    bool isReplace = false,
-    bool isRemoveUntil = false,
+    bool replace = false,
+    bool removeUntil = false,
     RoutePredicate? routePredicate,
   }) =>
       _worker.to(
@@ -85,8 +85,8 @@ class Turn {
         result: result,
         package: package,
         fallthrough: fallthrough,
-        isReplace: isReplace,
-        isRemoveUntil: isRemoveUntil,
+        isReplace: replace,
+        isRemoveUntil: removeUntil,
         routePredicate: routePredicate,
       );
 
@@ -324,7 +324,7 @@ extension on _Worker {
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return _navigation.delegate?.beforeTureTo(
+    return _navigation.delegate?.beforeTurnTo(
           context,
           turnRoute,
           arguments,
