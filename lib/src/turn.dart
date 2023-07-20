@@ -8,14 +8,33 @@ import 'tree.dart';
 class Turn {
   Turn._();
 
-  static final _Worker worker = _Worker();
+  static final _Navigation _nav = _Navigation();
 
-  static void addRoute(TurnRoute route) {
-    worker.addRoute(route);
+  static _Worker get _worker {
+    __worker ??= _Worker._(_nav);
+    return __worker!;
   }
 
-  static void addDelegate(TurnDelegate delegate) {
-    worker.addDelegate(delegate);
+  static _Worker? __worker;
+
+  static void addRoute(TurnRoute route) {
+    _nav.addRoute(route);
+  }
+
+  static void setDelegate(TurnDelegate? delegate) {
+    _nav.setDelegate(delegate);
+  }
+
+  /// Return a instance of [Turnable]
+  /// - if [package] is null, will return the default instance of [Turnable].
+  /// - if [package] is not null, will return a new instance of [Turnable].
+  ///   When calling [Turnable.to], the routes set for this [package] will be prioritized
+  ///   unless a different [package] is passed when calling [Turnable.to].
+  static Turnable turn({String? package}) {
+    if (package == null || package.isEmpty) {
+      return _worker;
+    }
+    return _Worker._(_nav, package: package);
   }
 
   static void pop<T extends Object>(BuildContext context, [T? result]) => Navigator.pop<T>(context, result);
@@ -44,7 +63,7 @@ class Turn {
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) =>
-      worker.to(
+      _worker.to(
         context,
         path,
         rootNavigator: rootNavigator,
@@ -58,33 +77,42 @@ class Turn {
         routePredicate: routePredicate,
       );
 
-  static Route<dynamic> generator(RouteSettings routeSettings) => worker.generator(routeSettings);
+  static Route<dynamic> generator(RouteSettings routeSettings) => _worker.generator(routeSettings);
 }
 
-class _Worker {
+class _Navigation {
   final RouteTree _routeTree = RouteTree();
-
-  TurnDelegate? _delegates;
+  TurnDelegate? delegate;
 
   void addRoute(TurnRoute route) {
+    assert(() {
+      final package = route.package, path = route.route;
+      if (package != null && package.isEmpty) {
+        throw ArgumentError.value(package, 'package', 'if package is not null, package cannot be empty.');
+      }
+      if (path.isEmpty) {
+        throw ArgumentError.value(path, 'path', 'path cannot be empty');
+      }
+      return true;
+    }());
     _routeTree.addRoute(route);
   }
 
-  void addDelegate(TurnDelegate delegate) {
+  void setDelegate(TurnDelegate? delegate) {
+    if (delegate == null) {
+      delegate = null;
+      return;
+    }
     assert(
-      _delegates == null,
+      this.delegate == null,
       'Only one delegate can be added. '
       'If you want to add multiple delegates, please add them within the delegate you have set.',
     );
-    if (_delegates != null) return;
-    _delegates = delegate;
+    if (this.delegate != null) return;
+    this.delegate = delegate;
   }
 
-  void removeDelegate() {
-    _delegates = null;
-  }
-
-  MatchResult? _matchRoute(
+  MatchResult? matchRoute(
     String route, {
     String? package,
     bool fallthrough = true,
@@ -95,7 +123,31 @@ class _Worker {
       fallthrough: fallthrough,
     ));
   }
+}
 
+abstract class Turnable {
+  Future to(
+    BuildContext context,
+    String path, {
+    bool? rootNavigator,
+    dynamic data,
+    TransitionMode? mode,
+    Object? result,
+    String? package,
+    bool fallthrough = true,
+    bool isReplace = false,
+    bool isRemoveUntil = false,
+    RoutePredicate? routePredicate,
+  });
+}
+
+class _Worker implements Turnable {
+  _Worker._(this._navigation, {this.package});
+
+  final _Navigation _navigation;
+  final String? package;
+
+  @override
   Future to(
     BuildContext context,
     String path, {
@@ -109,9 +161,9 @@ class _Worker {
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) async {
-    final matchResult = _matchRoute(
+    final matchResult = _navigation.matchRoute(
       path,
-      package: package,
+      package: package ?? this.package,
       fallthrough: fallthrough,
     );
     if (matchResult == null) {
@@ -192,7 +244,7 @@ class _Worker {
   Route<dynamic> generator(RouteSettings routeSettings) {
     final arguments = routeSettings.arguments;
     final name = routeSettings.name ?? '';
-    final matchResult = _matchRoute(name);
+    final matchResult = _navigation.matchRoute(name);
 
     if (matchResult == null) {
       return MaterialPageRoute(
@@ -227,7 +279,7 @@ class _Worker {
 
 extension on _Worker {
   WidgetBuilder? notFoundPage(BuildContext context, String route, Object? data) {
-    return _delegates?.notFoundPage(context, route, data);
+    return _navigation.delegate?.notFoundPage(context, route, data);
   }
 
   Future? willTurnTo(
@@ -241,7 +293,7 @@ extension on _Worker {
     bool isRemoveUntil = false,
     RoutePredicate? routePredicate,
   }) {
-    return _delegates?.willTurnTo(
+    return _navigation.delegate?.willTurnTo(
       context,
       turnRoute,
       arguments,
@@ -259,7 +311,7 @@ extension on _Worker {
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return _delegates?.beforeTureTo(
+    return _navigation.delegate?.beforeTureTo(
           context,
           turnRoute,
           arguments,
@@ -274,7 +326,7 @@ extension on _Worker {
     TurnRoute turnRoute,
     Arguments arguments,
   ) {
-    return _delegates?.turnCompleted(
+    return _navigation.delegate?.turnCompleted(
           context,
           result,
           turnRoute,
