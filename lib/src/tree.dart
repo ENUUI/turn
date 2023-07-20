@@ -42,8 +42,9 @@ class TurnRoute {
   ///   *    'name': QueryType.string,
   ///   *    'age': QueryType.integer,
   ///   *  }
-  /// 如果 queryTypeMap 不为空，将类型进行类型转化。不在 queryTypeMap 中的参数默认为字符串。
-  /// 如果key对应数组，则会尝试将数组中的每一个元素进行类型转化
+  /// If [queryTypeMap] is not empty, the types will be converted accordingly.
+  /// Parameters that are not in [queryTypeMap] will default to strings.
+  /// If the key corresponds to an array, each element in the array will be attempted to be converted.
   final Map<String, QueryType>? queryTypeMap;
 
   TurnRoute copy({String? package}) {

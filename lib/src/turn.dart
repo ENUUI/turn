@@ -50,6 +50,19 @@ class Turn {
   static NavigatorState of(BuildContext context, {bool rootNavigator = false}) =>
       Navigator.of(context, rootNavigator: rootNavigator);
 
+  /// Turn to the given route onto the navigator.
+  ///
+  /// - [path]: The path of the route to turn to .
+  /// - [rootNavigator]: If `rootNavigator` is set to true, the state from the furthest instance of
+  ///     this class is given instead. Useful for pushing contents above all
+  ///     subsequent instances of [Navigator].
+  /// - [data]: The data to pass to the route.
+  /// - [mode]: The route's transition.
+  /// - [result]: When [isReplace] is true, it will be returned to the previous page.
+  /// - [package]: The package of the route to turn to.
+  /// - [fallthrough]: If the route is not found, whether to continue to find the route in the other package.
+  /// - [isReplace]: [NavigatorState.pushReplacement] .
+  /// - [isRemoveUntil/routePredicate]: [NavigatorState.pushAndRemoveUntil].
   static Future to(
     BuildContext context,
     String path, {
