@@ -10,30 +10,29 @@ import '../sub_module/pages/index/index.dart';
 class MainModule extends TurnDelegate {}
 
 void initAppRoute() {
-  final worker = Turn.worker;
-  worker.addRoute(TurnRoute(
+  Turn.addRoute(TurnRoute(
     Navigator.defaultRouteName,
     (context, args) => Home(),
   ));
-  worker.addRoute(TurnRoute(
+  Turn.addRoute(TurnRoute(
     'discovery',
-    (context, args) => DiscoveryPage(),
+    (context, args) => const DiscoveryPage(),
   ));
-  worker.addRoute(TurnRoute(
+  Turn.addRoute(TurnRoute(
     'me/:id',
-    (context, args) => MePage(),
+    (context, args) => const MePage(),
     transitionMode: TransitionMode.modal,
     queryTypeMap: {'id': QueryType.integer},
   ));
 
-  worker.addRoute(TurnRoute(
+  Turn.addRoute(TurnRoute(
     'sub/page',
-    (context, args) => SubIndex(),
+    (context, args) => const SubIndex(),
     package: 'sub',
   ));
-  worker.addRoute(TurnRoute(
+  Turn.addRoute(TurnRoute(
     'discovery',
-    (context, args) => Discovery(),
+    (context, args) => const Discovery(),
     package: 'sub',
   ));
 }
