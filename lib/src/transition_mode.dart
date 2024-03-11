@@ -21,8 +21,7 @@ class _Native implements TransitionMode {
   const _Native();
 
   @override
-  Route<T> generator<T extends Object?>(
-      WidgetBuilder builder, RouteSettings? settings) {
+  Route<T> generator<T extends Object?>(WidgetBuilder builder, RouteSettings? settings) {
     return MaterialPageRoute<T>(
       settings: settings,
       builder: builder,
@@ -34,8 +33,7 @@ class _NativeModal implements TransitionMode {
   const _NativeModal();
 
   @override
-  Route<T> generator<T extends Object?>(
-      WidgetBuilder builder, RouteSettings? settings) {
+  Route<T> generator<T extends Object?>(WidgetBuilder builder, RouteSettings? settings) {
     return MaterialPageRoute<T>(
       fullscreenDialog: true,
       settings: settings,
@@ -48,8 +46,7 @@ class _FadeIn implements TransitionMode {
   const _FadeIn();
 
   @override
-  Route<T> generator<T extends Object?>(
-      WidgetBuilder builder, RouteSettings? settings) {
+  Route<T> generator<T extends Object?>(WidgetBuilder builder, RouteSettings? settings) {
     return PageRouteBuilder(
       settings: settings,
       transitionDuration: kTransitionDuration,
@@ -67,8 +64,7 @@ class _InFromLeft implements TransitionMode {
   final Offset begin;
 
   @override
-  Route<T> generator<T extends Object?>(
-      WidgetBuilder builder, RouteSettings? settings) {
+  Route<T> generator<T extends Object?>(WidgetBuilder builder, RouteSettings? settings) {
     return PageRouteBuilder<T>(
       settings: settings,
       transitionDuration: kTransitionDuration,

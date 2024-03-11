@@ -7,11 +7,13 @@ import 'package:turn/turn.dart';
 void main() {
   runZonedGuarded(() {
     initAppRoute();
-    runApp(MyApp());
+    runApp(const MyApp());
   }, (err, s) {});
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }

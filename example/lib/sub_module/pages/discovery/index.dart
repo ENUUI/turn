@@ -22,7 +22,7 @@ class _DiscoveryState extends State<Discovery> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SubModule Discovery Page'),
+        title: const Text('SubModule Discovery Page'),
       ),
     );
   }

@@ -21,7 +21,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Discovery'),
+        title: const Text('Discovery'),
       ),
     );
   }

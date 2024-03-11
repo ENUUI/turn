@@ -12,7 +12,7 @@ class MainModule extends TurnDelegate {}
 void initAppRoute() {
   Turn.addRoute(TurnRoute(
     Navigator.defaultRouteName,
-    (context, args) => Home(),
+    (context, args) => const Home(),
   ));
   Turn.addRoute(TurnRoute(
     'discovery',

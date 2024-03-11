@@ -1,8 +1,9 @@
-import 'package:example/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:turn/turn.dart';
 
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
   State<StatefulWidget> createState() => _HomeState();
 }
@@ -46,7 +47,7 @@ class _HomeState extends State<Home> {
                   print(s);
                 });
               },
-              child: Text('Push To `discovery'),
+              child: const Text('Push To `discovery'),
             ),
             MaterialButton(
               onPressed: () {
@@ -59,7 +60,7 @@ class _HomeState extends State<Home> {
                   print(s);
                 });
               },
-              child: Text('Push To `me/:id'),
+              child: const Text('Push To `me/:id'),
             ),
             MaterialButton(
               onPressed: () {
@@ -68,7 +69,7 @@ class _HomeState extends State<Home> {
                   print(s);
                 });
               },
-              child: Text('Push To Sub `discovery`'),
+              child: const Text('Push To Sub `discovery`'),
             ),
             MaterialButton(
               onPressed: () {
@@ -81,7 +82,7 @@ class _HomeState extends State<Home> {
                   print(s);
                 });
               },
-              child: Text('Push To `sub/page'),
+              child: const Text('Push To `sub/page'),
             ),
           ],
         ),

@@ -21,7 +21,7 @@ class _SubIndexState extends State<SubIndex> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SubModule Page'),
+        title: const Text('SubModule Page'),
       ),
     );
   }

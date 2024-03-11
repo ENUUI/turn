@@ -24,7 +24,7 @@ class _MePageState extends State<MePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Me'),
+        title: const Text('Me'),
       ),
     );
   }
