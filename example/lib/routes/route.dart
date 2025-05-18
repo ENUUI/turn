@@ -7,8 +7,6 @@ import '../pages/discovery/index.dart';
 import '../sub_module/pages/discovery/index.dart';
 import '../sub_module/pages/index/index.dart';
 
-class MainModule extends TurnDelegate {}
-
 void initAppRoute() {
   Turn.addRoute(TurnRoute(
     Navigator.defaultRouteName,
